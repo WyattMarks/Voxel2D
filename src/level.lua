@@ -50,12 +50,12 @@ function level:generateWorld(num)
 	local curChunk = self:getChunk(player.x)
 	if not self.chunks[curChunk + num] then
 		self.chunks[curChunk + num] = chunk:generate(curChunk + num)
-		print("Generated chunk <"..tostring(curChunk + num)..">")
+		debug:print("Generated chunk <"..tostring(curChunk + num)..">")
 	end
 	
 	if not self.chunks[curChunk - num - 1] then
 		self.chunks[curChunk - num - 1] = chunk:generate(curChunk - num - 1)
-		print("Generated chunk <"..tostring(curChunk - num - 1)..">")
+		debug:print("Generated chunk <"..tostring(curChunk - num - 1)..">")
 	end
 	
 	if num > 0 then
@@ -77,7 +77,7 @@ function level:unloadWorld(num)
 				end
 			end
 			self.chunks[k] = nil
-			print("Unloaded chunk <"..tostring(k)..">")
+			debug:print("Unloaded chunk <"..tostring(k)..">")
 		end
 	end
 end

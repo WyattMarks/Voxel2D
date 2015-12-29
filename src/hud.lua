@@ -1,9 +1,7 @@
 local hud = {}
 
 function hud:draw()
-	love.graphics.setColor(0,0,0)
-	love.graphics.setFont(love.graphics.newFont(20))
-	love.graphics.print(tostring("FPS: "..love.timer.getFPS()), 10, 10)
+	debug:add("FPS", love.timer.getFPS())
 	
 	
 	local mouseX, mouseY = love.mouse.getPosition()

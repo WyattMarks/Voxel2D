@@ -1,5 +1,6 @@
 io.stdout:setvbuf("no")
 
+debug = require("src/debug")
 bump = require("src/bump")
 chunk = require("src/chunk")
 input = require("src/input")
@@ -75,6 +76,7 @@ end
 function love.update(dt) 
 	level:update(dt)
 	player:update(dt)
+	debug:update(dt)
 end
 
 
@@ -86,6 +88,7 @@ function love.draw()
 	
 	hud:draw()
 	inventory:draw()
+	debug:draw()
 end
 
 function love.keypressed(key, isrepeat)
