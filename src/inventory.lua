@@ -7,6 +7,7 @@ inventory.activeItem = {}
 inventory.previousPos = {}
 inventory.vWidth = 400
 inventory.vHeight = 600
+inventory.font = love.graphics.newFont(15)
 
 function inventory:load()
 	for w=1, self.width do
@@ -19,6 +20,28 @@ end
 
 
 function inventory:add(block, quantity)
+	for h=1, self.height do
+		for w=1, self.width do
+			if (self.inventory[w][h].id or 0) == block.id and (self.inventory[w][h].quantity or 0) < 64 then
+				local oldAmount = (self.inventory[w][h].quantity or 0)
+				self.inventory[w][h] = block
+				self.inventory[w][h].quantity = oldAmount + quantity
+
+				return true
+			end
+		end
+	end
+	
+	for w=1, self.width do
+		if (self.inventory[w][self.height].id or block.id) == block.id and (self.inventory[w][self.height].quantity or 0) < 64 then
+			local oldAmount = (self.inventory[w][self.height].quantity or 0)
+			self.inventory[w][self.height] = block
+			self.inventory[w][self.height].quantity = oldAmount + quantity
+
+			return true
+		end
+	end
+	
 	for h=1, self.height do
 		for w=1, self.width do
 			if (self.inventory[w][h].id or block.id) == block.id and (self.inventory[w][h].quantity or 0) < 64 then
@@ -78,11 +101,10 @@ function inventory:draw()
 				
 				if self.inventory[w][h].quantity > 1 then
 					love.graphics.setColor(255,255,255)
-					local font = love.graphics.newFont(15)
-					love.graphics.setFont( font )
+					love.graphics.setFont( self.font )
 					if self.activeItem ~= self.inventory[w][h] then
-						local y = y + 32 - font:getHeight()
-						local x = x + 32 - font:getWidth(tostring(self.inventory[w][h].quantity))
+						local y = y + 32 - self.font:getHeight()
+						local x = x + 32 - self.font:getWidth(tostring(self.inventory[w][h].quantity))
 						love.graphics.print(tostring(self.inventory[w][h].quantity), x, y)
 					end
 				end
@@ -102,10 +124,9 @@ function inventory:draw()
 		love.graphics.setColor(255,255,255)
 		love.graphics.draw(blockManager.texture, self.inventory[w][h].quad, x, y, 0, 1.875, 1.875)
 		if self.inventory[w][h].quantity > 1 then
-			local font = love.graphics.newFont(15)
-			love.graphics.setFont( font )
-			local y = y + 32 - font:getHeight()
-			local x = x + 32 - font:getWidth(tostring(self.inventory[w][h].quantity))
+			love.graphics.setFont( self.font )
+			local y = y + 32 - self.font:getHeight()
+			local x = x + 32 - self.font:getWidth(tostring(self.inventory[w][h].quantity))
 			love.graphics.print(tostring(self.inventory[w][h].quantity), x, y)
 		end
 	end

@@ -108,3 +108,7 @@ function love.mousereleased(x, y, button, istouch)
 	player:mousereleased(x, y, button)
 	inventory:mousereleased(x, y, button)
 end
+
+function love.wheelmoved(x,y)
+	player:wheelmoved(x,y)
+end

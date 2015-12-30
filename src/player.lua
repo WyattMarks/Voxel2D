@@ -17,6 +17,15 @@ player.onGround = false
 player.activeSlot = 1
 player.lastPlace = {1,1}
 
+function player:wheelmoved(x,y)
+	self.activeSlot = self.activeSlot - y
+	
+	if self.activeSlot > 10 then
+		self.activeSlot = 1
+	elseif self.activeSlot < 1 then
+		self.activeSlot = 10
+	end
+end
 
 function player:canPlace(x,y,chunk,layer)
 	if level.chunks[chunk][layer][x][y].id ~= 0 then
