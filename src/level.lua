@@ -135,6 +135,28 @@ function level:deleteBlock(x, y, chunk, bg)
 	self.chunks[chunk][layer][x][y] = newBlock;
 end
 
+
+function level:getSurrounding(x, y, chunk, layer)
+	local function safe(x) return math.min(16, math.max(1, x)) end
+
+	
+	local blocks = {}
+	blocks[1] = self.chunks[chunk][layer][safe(x-1)][y] 
+	blocks[2] = self.chunks[chunk][layer][x][y-1]
+	blocks[3] = self.chunks[chunk][layer][safe(x+1)][y]
+	blocks[4] = self.chunks[chunk][layer][x][y+1]
+	
+	
+	if x == 1 then
+		blocks[1] = self.chunks[chunk-1][layer][16][y]
+	elseif x == 16 then
+		blocks[3] = self.chunks[chunk+1][layer][1][y]
+	end
+	
+	return blocks
+end
+
+
 function level:placeBlock(block, x, y, chunk, bg)
 	local layer = 1
 	if bg then layer = 2 end

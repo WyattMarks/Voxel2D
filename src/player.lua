@@ -14,6 +14,68 @@ player.mode = "break"
 player.breaking = {}
 player.sameActive = 0
 player.onGround = false
+player.activeSlot = 1
+player.lastPlace = {1,1}
+
+
+function player:canPlace(x,y,chunk,layer)
+	if level.chunks[chunk][layer][x][y].id ~= 0 then
+		return false
+	end
+	
+	local hasSolid = false
+	for k, block in pairs(level:getSurrounding(x, y, chunk, layer)) do
+		if not block.transparent then
+			hasSolid = true
+		end
+	end
+	
+	if not level.chunks[chunk][2][x][y].transparent then
+		hasSolid = true
+	end
+	
+	if not hasSolid then
+		return false
+	end
+	
+	
+	return true
+end
+
+
+function player:checkPlace(dt)
+	local x,y = love.mouse.getPosition()
+	
+	local down = 0
+	if love.mouse.isDown(1) then
+		down = 1
+	elseif love.mouse.isDown(2) then
+		down = 2
+	end
+	
+	local lastPlace = self.lastPlace
+	if down ~= 0 then
+		local item = inventory.inventory[self.activeSlot][inventory.height]
+		if item.delay then
+			local x, y, chunk = level:screenToWorld(x, y)
+			
+			if (lastPlace[1] ~= x or lastPlace[2] ~= y) and self:canPlace(x, y, chunk, down) then
+				local block = blocks[item.name]:new()
+				block.bg = down == 2
+				block:updateQuad()
+				
+				level:placeBlock(block, x, y, chunk, block.bg)
+				
+				if item.quantity <= 1 then
+					inventory.inventory[self.activeSlot][inventory.height] = {}
+				else
+					inventory.inventory[self.activeSlot][inventory.height].quantity = item.quantity - 1
+				end
+			end
+		end
+	end
+end
+
 
 function player:checkMine(dt)
 	local x,y = love.mouse.getPosition()
@@ -26,14 +88,9 @@ function player:checkMine(dt)
 	end
 	
 	local oldBreaking = self.breaking
-	if self.mode == "break" then
-		if down == 1 then
-			local x, y, chunk = level:screenToWorld(x, y)
-			self.breaking = level.chunks[chunk][1][x][y]
-		elseif down == 2 then
-			local x, y, chunk = level:screenToWorld(x, y)
-			self.breaking = level.chunks[chunk][2][x][y]
-		end
+	if self.mode == "break" and down ~= 0 then
+		local x, y, chunk = level:screenToWorld(x, y)
+		self.breaking = level.chunks[chunk][down][x][y]
 	end
 	
 	if self.breaking.id ~= 0 and self.breaking == oldBreaking then
