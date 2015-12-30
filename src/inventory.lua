@@ -7,7 +7,7 @@ inventory.activeItem = {}
 inventory.previousPos = {}
 inventory.vWidth = 400
 inventory.vHeight = 600
-inventory.font = love.graphics.newFont(15)
+inventory.font = {}
 
 function inventory:load()
 	for w=1, self.width do
@@ -16,6 +16,11 @@ function inventory:load()
 			self.inventory[w][h] = {}
 		end
 	end
+	
+	self.font = love.graphics.newImageFont("assets/font.png",
+    " abcdefghijklmnopqrstuvwxyz" ..
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0" ..
+    "123456789.,!?-+/():;%&`'*#=[]\"")
 end
 
 

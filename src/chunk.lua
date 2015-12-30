@@ -8,7 +8,7 @@ function chunk:round(num)
   return math.floor(num + 0.5)
 end
 
-function chunk:reGenerateSpriteBatch(final)
+function chunk:reGenerateSpriteBatch()
 	
 end
 

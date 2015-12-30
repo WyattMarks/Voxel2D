@@ -3,7 +3,7 @@ level.offset = 0
 level.chunkWidth = 16
 level.worldHeight = 128
 level.chunks = {}
-
+level.name = "world"
 
 function level:getChunk(x) --get the chunk from the x coordinate
 	return math.floor(x * camera.sx / (self.chunkWidth * blockManager.size * camera.sx)) --+ ( x > 0 and 1 or 0)
@@ -180,6 +180,16 @@ function level:placeBlock(block, x, y, chunk, bg)
 		else
 			self.chunks[chunk][3]:add(block.quad, math.floor(x * blockManager.size), math.floor(y * blockManager.size) )
 		end
+	end
+end
+
+
+function level:save(chunk)
+	local fgBlocks = {}
+	local bgBlocks = {}
+	
+	for x, col in pairs(chunk[1]) do
+		
 	end
 end
 

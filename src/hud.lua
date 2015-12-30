@@ -48,7 +48,7 @@ function hud:draw()
 				love.graphics.setColor(255,255,255)
 				love.graphics.setFont( inventory.font )
 				local y = y + 32 - inventory.font:getHeight()
-				local x = x + 32 - inventory.font:getWidth(tostring(item.quantity))
+				local x = x + 31 - inventory.font:getWidth(tostring(item.quantity))
 				love.graphics.print(tostring(item.quantity), x, y)
 			end
 		end

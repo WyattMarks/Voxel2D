@@ -2,6 +2,8 @@ local debug = {}
 debug.on = true
 debug.variables = {}
 debug.log = {}
+debug.font = {}
+debug.offset = 20
 
 function debug:add(key, value)
 	for k,v in pairs(self.variables) do
@@ -22,15 +24,25 @@ end
 
 function debug:draw()
 	local y = 10
-	local font = love.graphics.newFont(15)
 	
-	love.graphics.setColor(0,0,0)
-	love.graphics.setFont(font)
+	if type(self.font) == "table" then
+		self.font = love.graphics.newImageFont("assets/font.png",
+		" abcdefghijklmnopqrstuvwxyz" ..
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZ0" ..
+		"123456789.,!?-+/():;%&`'*#=[]\"")
+	end
+	
+	love.graphics.setColor(255,255,255)
+	love.graphics.setFont(self.font)
 	
 	
 	for i=1, #self.variables do
+		
+		
 		love.graphics.print(tostring(self.variables[i][1])..":", 10, y)
-		love.graphics.print(tostring(self.variables[i][2]), 50, y)
+		love.graphics.print(tostring(self.variables[i][2]), self.font:getWidth(tostring(self.variables[i][1])..":") + 10 + self.offset, y)
+		
+		y = y + 10
 	end
 end
 
