@@ -164,22 +164,22 @@ function player:update(dt)
 	
 	if self.x - camera.x > (screenWidth - camera.horizontalBorder - self.width) * camera.sx then
 		camera:move(camDist)
-		camera.xOffset = self.x - camera.x
+		camera.xOffset = (self.x - camera.x) - (screenWidth - camera.horizontalBorder - self.width) * camera.sx
 	end
 	
 	if self.x - camera.x < camera.horizontalBorder * camera.sx then
 		camera:move(-camDist)
-		camera.xOffset = self.x - camera.x
+		camera.xOffset = (self.x - camera.x) - camera.horizontalBorder * camera.sx
 	end
 	
 	if self.y - camera.y > (screenHeight - camera.bottomBorder - self.height) * camera.sy then
 		camera:move(0, camDist)
-		camera.yOffset = self.y - camera.y
+		camera.yOffset = (self.y - camera.y) - (screenHeight - camera.bottomBorder - self.height) * camera.sy
 	end
 	
 	if self.y - camera.y < camera.topBorder * camera.sy then
 		camera:move(0, -camDist)
-		camera.yOffset = self.y - camera.y
+		camera.yOffset = (self.y - camera.y) - camera.topBorder * camera.sy
 	end
 	
 	if oldXOff == camera.xOffset then
