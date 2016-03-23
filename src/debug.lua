@@ -33,7 +33,7 @@ function debug:draw()
 	love.graphics.setFont(self.font)
 	
 	
-	for i=1, #self.log do
+	for i=#self.log, 1, -1 do
 		if self.log[i][1] < 5 then
 			love.graphics.setColor(255, 255, 255, (5 / self.log[i][1] - 1) * 255)
 			love.graphics.print(self.log[i][2], 10, y)
