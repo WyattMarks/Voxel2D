@@ -292,9 +292,9 @@ function level:load(chunkNum)
 				if not fgBlock.transparent then
 					local screenX, screenY = self:worldToCoords(x, y, chunkNum)
 					world:add(fgBlock, screenX, screenY, blockManager.size, blockManager.size)
+					fgBlock.spriteID = spriteBatch:add(fgBlock.quad, math.floor( x * blockManager.size ), math.floor( y * blockManager.size) )
 				end
 				
-				fgBlock.spriteID = spriteBatch:add(fgBlock.quad, math.floor( x * blockManager.size ), math.floor( y * blockManager.size) )
 				fgBlock.x = 1 + self.offset + chunkNum * self.chunkWidth
 				fgBlock.y = y
 				
@@ -307,7 +307,7 @@ function level:load(chunkNum)
 		for y=1, self.worldHeight do
 			if not fgBlocks[x][y] then
 				local fgBlock = blockManager:getBlocks().air:new()
-				fgBlock.spriteID = spriteBatch:add(fgBlock.quad, math.floor( x * blockManager.size ), math.floor( y * blockManager.size) )
+				--fgBlock.spriteID = spriteBatch:add(fgBlock.quad, math.floor( x * blockManager.size ), math.floor( y * blockManager.size) )
 				fgBlock.x = 1 + self.offset + chunkNum * self.chunkWidth
 				fgBlock.y = y
 				
