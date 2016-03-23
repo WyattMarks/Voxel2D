@@ -10,7 +10,6 @@ button.textColor = {r = 255, g = 255, b = 255};
 button.mouseOver = false; --Used internally in this class
 button.button = 1; --Which mouse button should click it
 button.wasMouseDown = false; --Used to make sure it doesnt get clicked 999 times when you only are holding the mouse down
-button.runClickOnce = false;
 button.visible = true;
 button.allowTransparency = true;
 
@@ -39,11 +38,11 @@ function button:update(dt)
 		self.mouseOver = false;
 	end
 
-
-	if self.wasMouseDown and self.mouseOver and not love.mouse.isDown(self.button) and not self.runClickOnce then
-		self.runClickOnce = true; --This just makes sure that the click function is only called when you release the mouse
+	if self.wasMouseDown and self.mouseOver and not love.mouse.isDown(self.button) then
 		self:onClick();
 	end
+	
+	self.wasMouseDown = love.mouse.isDown(self.button)
 end
 
 function button:onClick() --This will normally be overrided but we need to define it so in case they don't override it it doesn't error 
@@ -61,12 +60,9 @@ function button:draw()
 			else
 				love.graphics.setColor(color.r, color.g, color.b);
 			end
-
-			self.wasMouseDown = true;
 		else
 			local color = self.color or self.highlightColor; --Mouse over color since we're not clicking but the mouse is over
 			love.graphics.setColor(color.r, color.g, color.b);
-			self.wasMouseDown = false;
 		end
 	else
 		if self.allowTransparency then
