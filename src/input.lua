@@ -37,6 +37,11 @@ function input:load()
 	bind:addBind("pFly", settings.binds.fly, function(down)
 		if down then
 			player.flying = not player.flying
+			if player.flying then
+				debug:add("Flying", '')
+			else
+				debug:remove("Flying")
+			end
 		end
 	end)
 

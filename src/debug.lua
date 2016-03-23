@@ -16,6 +16,14 @@ function debug:add(key, value)
 	self.variables[#self.variables + 1] = {key, value}
 end
 
+function debug:remove(key)
+	for k,v in pairs(self.variables) do
+		if v[1] == key then
+			self.variables[k] = nil
+		end
+	end
+end
+
 function debug:print(str)
 	print(str)
 	self.log[#self.log + 1] = {0, tostring(str)}
@@ -41,11 +49,16 @@ function debug:draw()
 		end
 	end
 	
+	love.graphics.setColor(255,255,255)
+	
 	y = 10
 	for i=1, #self.variables do
 		
-		
-		love.graphics.print(tostring(self.variables[i][1])..":", screenWidth - 80, y)
+		local str = tostring(self.variables[i][1])
+		if self.variables[i][2] ~= '' then
+			str = str .. ":"
+		end
+		love.graphics.print(str, screenWidth - 80, y)
 		love.graphics.print(tostring(self.variables[i][2]), self.font:getWidth(tostring(self.variables[i][1])..":") + screenWidth - 80 + self.offset, y)
 		
 		y = y + self.font:getHeight() + 2
