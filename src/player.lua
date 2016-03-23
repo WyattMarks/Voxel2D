@@ -1,4 +1,5 @@
 local player = {}
+player.name = "player"
 player.x = 0
 player.y = 700
 player.speed = 128

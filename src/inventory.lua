@@ -10,16 +10,73 @@ inventory.vHeight = 600
 inventory.font = {}
 
 function inventory:load()
-	for w=1, self.width do
-		self.inventory[w] = {}
-		for h=1, self.height do
-			self.inventory[w][h] = {}
+	
+	if not self:loadSave() then
+		for w=1, self.width do
+			self.inventory[w] = {}
+			for h=1, self.height do
+				self.inventory[w][h] = {}
+			end
 		end
 	end
 	
 	self.font = font.small
 end
 
+
+function inventory:save()
+	if not love.filesystem.isDirectory(level.name) then
+		love.filesystem.createDirectory(level.name)
+	end
+	
+	local toSave = {}
+	for w,col in pairs(self.inventory) do
+		if not toSave[w] then
+			toSave[w] = {}
+		end
+		
+		for h,block in pairs(col) do
+			toSave[w][h] = {id = block.id, quantity = block.quantity}
+		end
+	end
+	
+	local final = Tserial.pack(toSave, false, true)
+	
+	love.filesystem.write(level.name.."/"..player.name..".inventory", final)
+	
+	debug:print("Saved "..player.name.."'s inventory")
+end
+
+function inventory:loadSave()
+	if not love.filesystem.isDirectory(level.name) then
+		return false
+	end
+	
+	if not love.filesystem.isFile(level.name.."/"..player.name..".inventory") then
+		return false
+	end
+	
+	local file, size = love.filesystem.read(level.name.."/"..player.name..".inventory")
+	local saved = Tserial.unpack(file)
+	
+	for w, col in pairs(saved) do
+		if not self.inventory[w] then
+			self.inventory[w] = {}
+		end
+		
+		for h, block in pairs(col) do
+			if block.id then
+				print(block.id, block.quantity)
+				self.inventory[w][h] = blockManager:getByID(block.id):new()
+				self.inventory[w][h].quantity = block.quantity
+			else
+				self.inventory[w][h] = block
+			end
+		end
+	end
+	
+	return true
+end
 
 function inventory:add(block, quantity)
 	for h=1, self.height do

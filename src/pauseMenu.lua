@@ -19,6 +19,8 @@ function menu:open()
 				level:save(v, k)
 			end
 			
+			inventory:save()
+			
 			love.event.quit()
 		end
 		
