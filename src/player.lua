@@ -259,7 +259,11 @@ end)
 
 input:addBind("pause", "escape", function(down)
 	if down then
-		level.paused = not level.paused
+		if not level.paused then
+			pauseMenu:open()
+		else
+			pauseMenu:close()
+		end
 	end
 end)
 

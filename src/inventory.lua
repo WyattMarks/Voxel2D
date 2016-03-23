@@ -17,10 +17,7 @@ function inventory:load()
 		end
 	end
 	
-	self.font = love.graphics.newImageFont("assets/font.png",
-    " abcdefghijklmnopqrstuvwxyz" ..
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0" ..
-    "123456789.,!?-+/():;%&`'*#=[]\"")
+	self.font = font.small
 end
 
 

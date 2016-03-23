@@ -26,10 +26,7 @@ function debug:draw()
 	local y = 10
 	
 	if type(self.font) == "table" then
-		self.font = love.graphics.newImageFont("assets/font.png",
-		" abcdefghijklmnopqrstuvwxyz" ..
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZ0" ..
-		"123456789.,!?-+/():;%&`'*#=[]\"")
+		self.font = font.small
 	end
 	
 	love.graphics.setColor(255,255,255)

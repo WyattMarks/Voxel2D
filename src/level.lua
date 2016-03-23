@@ -259,6 +259,8 @@ function level:save(chunk, chunkNum)
 	local final = Tserial.pack({fgBlocks, bgBlocks}, false, true)
 	
 	love.filesystem.write(self.name.."/"..tostring(chunkNum)..".chunk", final)
+	
+	debug:print("Saved chunk <"..tostring(chunkNum)..">")
 end
 
 function level:load(chunkNum)
