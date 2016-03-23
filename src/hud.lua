@@ -5,6 +5,7 @@ hud.hotbar.height = 34
 
 function hud:draw()
 	debug:add("FPS", love.timer.getFPS())
+	debug:add("Chunk", level:getChunk(player.x))
 	
 	
 	local mouseX, mouseY = love.mouse.getPosition()
@@ -20,6 +21,11 @@ function hud:draw()
 		
 		love.graphics.setColor(color.r, color.g, color.b, alpha)
 		love.graphics.rectangle('fill', x, y, blockManager.size / camera.sx, blockManager.size / camera.sy)
+		love.graphics.setColor(color.r, color.g, color.b, 255)
+		love.graphics.rectangle('line', x, y, blockManager.size / camera.sx, blockManager.size / camera.sy)
+	else
+		local color = settings.hoverCursorColor
+
 		love.graphics.setColor(color.r, color.g, color.b, 255)
 		love.graphics.rectangle('line', x, y, blockManager.size / camera.sx, blockManager.size / camera.sy)
 	end

@@ -11,7 +11,9 @@ player = require("src/player")
 hud = require("src/hud")
 settings = require("src/settings")
 inventory = require("src/inventory")
+pauseMenu = require("src/pauseMenu")
 require("src/camera")
+require("src/Tserial")
 
 function PrintTable(tbl, tabs)
 	tabs = tabs or 0;
@@ -74,8 +76,13 @@ end
 
 
 function love.update(dt) 
-	level:update(dt)
-	player:update(dt)
+	if not level.paused then
+		level:update(dt)
+		player:update(dt)
+	else
+		pauseMenu:update(dt)
+	end
+	
 	debug:update(dt)
 end
 
@@ -89,6 +96,10 @@ function love.draw()
 	hud:draw()
 	inventory:draw()
 	debug:draw()
+	
+	if level.paused then
+		pauseMenu:draw()
+	end
 end
 
 function love.keypressed(key, isrepeat)

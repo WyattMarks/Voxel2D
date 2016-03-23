@@ -251,4 +251,16 @@ input:addBind("pFly", "f", function(down)
 	end
 end)
 
+input:addBind("debug", "g", function(down)
+	if down then
+		PrintTable(level:save(level.chunks[1]))
+	end
+end)
+
+input:addBind("pause", "escape", function(down)
+	if down then
+		level.paused = not level.paused
+	end
+end)
+
 return player

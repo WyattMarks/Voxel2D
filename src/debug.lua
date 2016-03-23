@@ -42,7 +42,7 @@ function debug:draw()
 		love.graphics.print(tostring(self.variables[i][1])..":", 10, y)
 		love.graphics.print(tostring(self.variables[i][2]), self.font:getWidth(tostring(self.variables[i][1])..":") + 10 + self.offset, y)
 		
-		y = y + 10
+		y = y + self.font:getHeight() + 2
 	end
 end
 

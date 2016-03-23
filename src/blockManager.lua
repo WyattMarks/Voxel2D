@@ -30,4 +30,14 @@ function blockManager:getBlocks()
 	return self.blocks
 end
 
+function blockManager:getByID(id)
+	for k,v in pairs(self.blocks) do
+		if v.id == id then
+			return v
+		end
+	end
+	
+	return false
+end
+
 return blockManager
