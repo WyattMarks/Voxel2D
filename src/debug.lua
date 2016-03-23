@@ -3,7 +3,7 @@ debug.on = true
 debug.variables = {}
 debug.log = {}
 debug.font = {}
-debug.offset = 20
+debug.offset = 10
 
 function debug:add(key, value)
 	for k,v in pairs(self.variables) do
@@ -18,7 +18,7 @@ end
 
 function debug:print(str)
 	print(str)
-	self.log[#self.log + 1] = os.date("%c", os.time()) .. tostring(str)
+	self.log[#self.log + 1] = {0, tostring(str)}
 end
 
 
@@ -33,11 +33,20 @@ function debug:draw()
 	love.graphics.setFont(self.font)
 	
 	
+	for i=1, #self.log do
+		if self.log[i][1] < 5 then
+			love.graphics.setColor(255, 255, 255, (5 / self.log[i][1] - 1) * 255)
+			love.graphics.print(self.log[i][2], 10, y)
+			y = y + self.font:getHeight() + 2
+		end
+	end
+	
+	y = 10
 	for i=1, #self.variables do
 		
 		
-		love.graphics.print(tostring(self.variables[i][1])..":", 10, y)
-		love.graphics.print(tostring(self.variables[i][2]), self.font:getWidth(tostring(self.variables[i][1])..":") + 10 + self.offset, y)
+		love.graphics.print(tostring(self.variables[i][1])..":", screenWidth - 80, y)
+		love.graphics.print(tostring(self.variables[i][2]), self.font:getWidth(tostring(self.variables[i][1])..":") + screenWidth - 80 + self.offset, y)
 		
 		y = y + self.font:getHeight() + 2
 	end
@@ -45,6 +54,9 @@ end
 
 
 function debug:update(dt)
+	for k,v in pairs(self.log) do
+		v[1] = v[1] + dt
+	end
 end
 
 
