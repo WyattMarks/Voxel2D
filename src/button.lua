@@ -61,7 +61,7 @@ function button:draw()
 				love.graphics.setColor(color.r, color.g, color.b);
 			end
 		else
-			local color = self.color or self.highlightColor; --Mouse over color since we're not clicking but the mouse is over
+			local color = self.highlightColor or self.color; --Mouse over color since we're not clicking but the mouse is over
 			love.graphics.setColor(color.r, color.g, color.b);
 		end
 	else

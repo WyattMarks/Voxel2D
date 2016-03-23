@@ -3,13 +3,14 @@ io.stdout:setvbuf("no")
 debug = require("src/debug")
 bump = require("src/bump")
 chunk = require("src/chunk")
+bind = require("src/bind")
 input = require("src/input")
+settings = require("src/settings")
 level = require("src/level")
 blockManager = require("src/blockManager")
 block = require("src/block")
 player = require("src/player")
 hud = require("src/hud")
-settings = require("src/settings")
 inventory = require("src/inventory")
 pauseMenu = require("src/pauseMenu")
 font = require("src/font")
@@ -58,6 +59,7 @@ function love.load()
 	level.offset = math.random(-10000,100000)
 	font:load()
 	blockManager:load()
+	input:load()
 	screenWidth = love.graphics.getWidth()
 	screenHeight = love.graphics.getHeight()
 	
@@ -106,11 +108,11 @@ function love.draw()
 end
 
 function love.keypressed(key, isrepeat)
-	input:keypressed(key, isrepeat)
+	bind:keypressed(key, isrepeat)
 end
 
 function love.keyreleased(key)
-	input:keyreleased(key)
+	bind:keyreleased(key)
 end
 
 function love.mousepressed( x, y, button, istouch )

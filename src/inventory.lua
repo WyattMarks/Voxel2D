@@ -233,12 +233,6 @@ function inventory:update(dt)
 	end
 end
 
-input:addBind("inventory", "e", function(down)
-	if down then
-		inventory.open = not inventory.open
-	end
-end)
-
 
 
 
