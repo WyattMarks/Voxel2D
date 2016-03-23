@@ -159,20 +159,34 @@ function player:update(dt)
 	local camDist = math.floor( camera.speed * dt )
 	
 	
+	local oldXOff = camera.xOffset
+	local oldYOff = camera.yOffset
+	
 	if self.x - camera.x > (screenWidth - camera.horizontalBorder - self.width) * camera.sx then
 		camera:move(camDist)
+		camera.xOffset = self.x - camera.x
 	end
 	
 	if self.x - camera.x < camera.horizontalBorder * camera.sx then
 		camera:move(-camDist)
+		camera.xOffset = self.x - camera.x
 	end
 	
 	if self.y - camera.y > (screenHeight - camera.bottomBorder - self.height) * camera.sy then
 		camera:move(0, camDist)
+		camera.yOffset = self.y - camera.y
 	end
 	
 	if self.y - camera.y < camera.topBorder * camera.sy then
 		camera:move(0, -camDist)
+		camera.yOffset = self.y - camera.y
+	end
+	
+	if oldXOff == camera.xOffset then
+		camera.xOffset = 0 
+	end
+	if oldYOff == camera.yOffset then
+		camera.yOffset = 0 
 	end
 	
 	local xMove = self.x

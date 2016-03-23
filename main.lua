@@ -72,6 +72,8 @@ function love.load()
 	camera.horizontalBorder = 256
 	camera.topBorder = 192
 	camera.bottomBorder = 256
+	camera.xOffset = 0
+	camera.yOffset = 0
 	
 	world = bump.newWorld(64)
 	

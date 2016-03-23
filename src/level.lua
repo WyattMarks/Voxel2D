@@ -11,8 +11,8 @@ end
 
 
 function level:screenToWorld(x, y)
-	x = camera.x + x * camera.sx
-	y = camera.y + y * camera.sy
+	x = (camera.x + camera.xOffset) + x * camera.sx
+	y = (camera.y + camera.yOffset) + y * camera.sy
 	local chunk = self:getChunk(x)
 	x = x - chunk * self.chunkWidth * (blockManager.size / camera.sx)
 	
