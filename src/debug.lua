@@ -4,6 +4,7 @@ debug.variables = {}
 debug.log = {}
 debug.font = {}
 debug.offset = 10
+debug.otherOffset = 80
 
 function debug:add(key, value)
 	for k,v in pairs(self.variables) do
@@ -58,8 +59,10 @@ function debug:draw()
 		if self.variables[i][2] ~= '' then
 			str = str .. ":"
 		end
-		love.graphics.print(str, screenWidth - 80, y)
-		love.graphics.print(tostring(self.variables[i][2]), self.font:getWidth(tostring(self.variables[i][1])..":") + screenWidth - 80 + self.offset, y)
+		love.graphics.print(str, screenWidth - self.otherOffset, y)
+		love.graphics.print(tostring(self.variables[i][2]), self.font:getWidth(tostring(self.variables[i][1])..":") + screenWidth - self.otherOffset + self.offset, y)
+			
+		self.otherOffset = math.max(self.otherOffset, self.font:getWidth(tostring(self.variables[i][2])) + 80)
 		
 		y = y + self.font:getHeight() + 2
 	end

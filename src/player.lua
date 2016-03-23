@@ -28,6 +28,10 @@ function player:wheelmoved(x,y)
 	end
 end
 
+function player:getWorldCoords()
+	return level:screenToWorld(self.x + self.width / 2, self.y + self.height)
+end
+
 function player:canPlace(x,y,chunk,layer)
 	if level.chunks[chunk][layer][x][y].id ~= 0 then
 		return false
@@ -148,6 +152,9 @@ function player:draw()
 end
 
 function player:update(dt)
+	local x,y,chunk = self:getWorldCoords()
+	debug:add("Chunk", chunk)
+	debug:add("Coords", "("..tostring(x)..","..tostring(y)..")")
 	local distance = math.floor( self.speed * dt )
 	local camDist = math.floor( camera.speed * dt )
 	

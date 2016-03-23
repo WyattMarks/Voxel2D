@@ -5,7 +5,6 @@ hud.hotbar.height = 34
 
 function hud:draw()
 	debug:add("FPS", love.timer.getFPS())
-	debug:add("Chunk", level:getChunk(player.x))
 	
 	
 	local mouseX, mouseY = love.mouse.getPosition()
