@@ -56,7 +56,7 @@ end
 
 function level:generateWorld(num)
 	local curChunk = self:getChunk(player.x)
-	self:loadSeed()
+	
 	if not self.chunks[curChunk + num] then
 		if self:load(curChunk + num) then
 			debug:print("Loaded chunk <"..tostring(curChunk + num)..">")
@@ -202,14 +202,32 @@ function level:placeBlock(block, x, y, chunk, bg)
 	end
 end
 
-
-function level:save(chunk, chunkNum)
+function level:saveData()
 	if not love.filesystem.isDirectory(self.name) then
 		love.filesystem.createDirectory(self.name)
 	end
 	
-	if not love.filesystem.isFile(self.name.."/seed") then
-		love.filesystem.write(self.name.."/seed", tostring(self.offset))
+	local x,y,chunk = player:getWorldCoords()
+	local data = {
+		seed = self.offset,
+		player = {
+			name = player.name,
+			x = x, 
+			y = y, 
+			chunk = chunk
+		}
+	}
+	
+	PrintTable(data)
+	
+	local save = Tserial.pack(data, false, true)
+	love.filesystem.write(self.name.."/"..self.name..".data", save)
+
+end
+
+function level:save(chunk, chunkNum)
+	if not love.filesystem.isDirectory(self.name) then
+		love.filesystem.createDirectory(self.name)
 	end
 	
 	local function makeSave(layer)
@@ -351,18 +369,23 @@ function level:load(chunkNum)
 	return true
 end
 
-function level:loadSeed()
+function level:loadData()
 	if not love.filesystem.isDirectory(self.name) then
 		return false
 	end
 	
-	if not love.filesystem.isFile(self.name.."/seed") then
+	if not love.filesystem.isFile(self.name.."/"..self.name..".data") then
 		return false
 	end
 	
-	local offset, size = love.filesystem.read(self.name.."/seed")
+	local file, size = love.filesystem.read(self.name.."/"..self.name..".data")
 	
-	self.offset = size
+	local data = Tserial.unpack(file)
+	PrintTable(data)
+	self.offset = data.seed
+	
+	player.x, player.y = level:worldToScreen(data.player.x, data.player.y, data.player.chunk)
+	
 	return true
 end
 	

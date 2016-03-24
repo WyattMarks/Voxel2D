@@ -21,6 +21,8 @@ function menu:open()
 			
 			inventory:save()
 			
+			level:saveData()
+			
 			love.event.quit()
 		end
 		

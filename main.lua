@@ -79,6 +79,7 @@ function love.load()
 	
 	player:load()
 	inventory:load()
+	level:loadData()
 end
 
 
