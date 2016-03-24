@@ -10,9 +10,17 @@ function level:getChunk(x) --get the chunk from the x coordinate
 end
 
 
-function level:screenToWorld(x, y)
-	x = (camera.x + camera.xOffset) + x * camera.sx
-	y = (camera.y + camera.yOffset) + y * camera.sy
+function level:screenToWorld(x, y, actuallyScreen)
+	local cameraX = camera.x
+	local cameraY = camera.y
+	
+	if not actuallyScreen then
+		cameraX = cameraX + camera.xOffset
+		cameraY = cameraY + camera.yOffset
+	end
+	
+	x = cameraX + x * camera.sx
+	y = cameraY + y * camera.sy
 	local chunk = self:getChunk(x)
 	x = x - chunk * self.chunkWidth * (blockManager.size / camera.sx)
 	

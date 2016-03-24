@@ -8,7 +8,7 @@ function hud:draw()
 	
 	
 	local mouseX, mouseY = love.mouse.getPosition()
-	local x, y, chunk = level:screenToWorld(mouseX, mouseY)
+	local x, y, chunk = level:screenToWorld(mouseX, mouseY, true)
 	
 	
 	x, y = level:worldToScreen(x, y, chunk)
