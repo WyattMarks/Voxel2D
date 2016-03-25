@@ -122,7 +122,7 @@ function player:checkMine(dt)
 			
 			if self.sameActive > (self.breaking.delay or 1) then
 				local x, y, chunk = level:screenToWorld(x, y)
-				local toAdd = blocks[self.breaking.name]:new()
+				local toAdd = blockManager:getByID(blocks[self.breaking.name].dropID):new()
 				
 				if inventory:add(toAdd, 1) then
 					level:deleteBlock(x, y, chunk, self.breaking.bg)
