@@ -29,7 +29,7 @@ function player:wheelmoved(x,y)
 end
 
 function player:getWorldCoords()
-	return level:screenToWorld(self.x + self.width / 2, self.y + self.height)
+	return level:screenToWorld((self.x + self.width / 2)/camera.sx - camera.x/camera.sx, (self.y + self.height)/camera.sy - camera.y/camera.sy, true)
 end
 
 function player:canPlace(x,y,chunk,layer)
@@ -52,6 +52,16 @@ function player:canPlace(x,y,chunk,layer)
 		return false
 	end
 	
+	local playerX, playerY = level:worldToScreen(self:getWorldCoords())
+	local mouseX, mouseY = love.mouse.getPosition()
+
+	playerX = playerX + blockManager.size / camera.sx / 2
+	playerY = playerY - blockManager.size / camera.sy
+	
+	local distance = math.floor(math.sqrt( (mouseX - playerX)^2 + (mouseY - playerY)^2 ) / blockManager.size)
+	if distance > 7 then
+		return false
+	end
 	
 	return true
 end
@@ -71,7 +81,7 @@ function player:checkPlace(dt)
 	if down ~= 0 then
 		local item = inventory.inventory[self.activeSlot][inventory.height]
 		if item.delay then
-			local x, y, chunk = level:screenToWorld(x, y)
+			local x, y, chunk = level:screenToWorld(x, y, true)
 			
 			if (lastPlace[1] ~= x or lastPlace[2] ~= y) and self:canPlace(x, y, chunk, down) then
 				local block = blocks[item.name]:new()
@@ -103,7 +113,7 @@ function player:checkMine(dt)
 	
 	local oldBreaking = self.breaking
 	if self.mode == "break" and down ~= 0 then
-		local x, y, chunk = level:screenToWorld(x, y)
+		local x, y, chunk = level:screenToWorld(x, y, true)
 		self.breaking = level.chunks[chunk][down][x][y]
 	end
 	
@@ -121,7 +131,7 @@ function player:checkMine(dt)
 			self.sameActive = self.sameActive + dt
 			
 			if self.sameActive > (self.breaking.delay or 1) then
-				local x, y, chunk = level:screenToWorld(x, y)
+				local x, y, chunk = level:screenToWorld(x, y, true)
 				local toAdd = blockManager:getByID(blocks[self.breaking.name].dropID):new()
 				
 				if inventory:add(toAdd, 1) then

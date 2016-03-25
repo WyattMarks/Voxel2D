@@ -380,7 +380,6 @@ function level:loadData()
 	
 	self.offset = data.seed
 	
-	--player.x, player.y = level:worldToScreen(data.player.x, data.player.y, data.player.chunk)
 	player.x = data.player.x
 	player.y = data.player.y
 	

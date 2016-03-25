@@ -10,7 +10,6 @@ function hud:draw()
 	local mouseX, mouseY = love.mouse.getPosition()
 	local x, y, chunk = level:screenToWorld(mouseX, mouseY, true)
 	
-	
 	x, y = level:worldToScreen(x, y, chunk)
 	
 	if (love.mouse.isDown(1) or love.mouse.isDown(2)) and player.mining then

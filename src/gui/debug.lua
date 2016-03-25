@@ -62,7 +62,7 @@ function debug:draw()
 		love.graphics.print(str, screenWidth - self.otherOffset, y)
 		love.graphics.print(tostring(self.variables[i][2]), self.font:getWidth(tostring(self.variables[i][1])..":") + screenWidth - self.otherOffset + self.offset, y)
 			
-		self.otherOffset = math.max(self.otherOffset, self.font:getWidth(tostring(self.variables[i][2])) + 80)
+		self.otherOffset = math.max(self.otherOffset, self.font:getWidth(str) + self.font:getWidth(tostring(self.variables[i][2])) + 30)
 		
 		y = y + self.font:getHeight() + 2
 	end
