@@ -350,6 +350,7 @@ function level:load(chunkNum)
 				bgBlock:updateQuad()
 				if fgBlocks[x][y].transparent then
 					bgBlock.spriteID = spriteBatch:add(bgBlock.quad, math.floor( x * blockManager.size ), math.floor( y * blockManager.size) )
+					fgBlocks[x][y].spriteID = spriteBatch:add(fgBlocks[x][y].quad, math.floor( x * blockManager.size ), math.floor( y * blockManager.size) )
 				end
 				bgBlock.x = 1 + self.offset + chunkNum * self.chunkWidth
 				bgBlock.y = y

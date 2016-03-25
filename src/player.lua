@@ -157,6 +157,7 @@ function player:update(dt)
 	local x,y,chunk = self:getWorldCoords()
 	debug:add("Chunk", chunk)
 	debug:add("Coords", "("..tostring(x)..","..tostring(y)..")")
+	debug:add("Mode", self.mode)
 	local distance = math.floor( self.speed * dt )
 	local camDist = math.floor( camera.speed * dt )
 	
