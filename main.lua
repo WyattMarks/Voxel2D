@@ -77,9 +77,9 @@ function love.load()
 	
 	world = bump.newWorld(64)
 	
+	level:loadData()
 	player:load()
 	inventory:load()
-	level:loadData()
 end
 
 
