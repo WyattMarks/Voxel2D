@@ -1,22 +1,32 @@
 io.stdout:setvbuf("no")
 
-debug = require("src/debug")
-bump = require("src/bump")
-chunk = require("src/chunk")
+
+
+--Third Party
+bump = require("src/thirdparty/bump")
+require("src/thirdparty/camera")
+require("src/thirdparty/Tserial")
+
+--World related
+chunk = require("src/world/chunk")
+level = require("src/world/level")
+blockManager = require("src/world/blockManager")
+block = require("src/world/block")
+
+--GUI related
+debug = require("src/gui/debug")
+hud = require("src/gui/hud")
+pauseMenu = require("src/gui/pauseMenu")
+button = require("src/gui/button")
+font = require("src/gui/font")
+
+
 bind = require("src/bind")
 input = require("src/input")
 settings = require("src/settings")
-level = require("src/level")
-blockManager = require("src/blockManager")
-block = require("src/block")
 player = require("src/player")
-hud = require("src/hud")
 inventory = require("src/inventory")
-pauseMenu = require("src/pauseMenu")
-font = require("src/font")
-button = require("src/button")
-require("src/camera")
-require("src/Tserial")
+
 
 function PrintTable(tbl, tabs)
 	tabs = tabs or 0;
