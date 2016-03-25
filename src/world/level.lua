@@ -207,15 +207,21 @@ function level:saveData()
 		love.filesystem.createDirectory(self.name)
 	end
 	
-	local x,y,chunk = player:getWorldCoords()
-	local data = {
-		seed = self.offset,
-		player = {
-			name = player.name,
-			x = player.x, 
-			y = player.y, 
-			chunk = chunk
-		}
+	local data = {}
+	
+	if love.filesystem.isFile(self.name.."/"..self.name..".data") then
+		local file, size = love.filesystem.read(self.name.."/"..self.name..".data")
+		local savedData = Tserial.unpack(file)
+		for k,v in pairs(savedData) do
+			data[k] = v
+		end
+	end
+	
+	data.seed = self.offset
+	
+	data[player.name] = {
+		x = player.x,
+		y = player.y,
 	}
 	
 	local save = Tserial.pack(data, false, true)
@@ -380,8 +386,10 @@ function level:loadData()
 	
 	self.offset = data.seed
 	
-	player.x = data.player.x
-	player.y = data.player.y
+	if data[player.name] then
+		player.x = data[player.name].x
+		player.y = data[player.name].y
+	end
 	
 	return true
 end
