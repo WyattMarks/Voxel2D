@@ -54,6 +54,12 @@ function input:load()
 			end
 		end
 	end)
+
+	bind:addBind("debug", "g", function(down)
+		if down then
+			print(camera.x, player.x)
+		end
+	end)
 end
 
 

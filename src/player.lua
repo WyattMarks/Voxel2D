@@ -137,6 +137,8 @@ end
 
 function player:load()
 	world:add(self, self.x - .5, self.y, self.width - 1, self.height)
+	
+	camera:move(player.x - screenWidth / 3, player.y - screenHeight / 3)
 end
 
 function player:mousepressed(x, y, button)

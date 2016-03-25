@@ -68,7 +68,6 @@ function love.load()
 	camera:scale(.5,.5)
 	--camera:scale(3,3)
 	camera.speed = 128
-	camera:move(0, 400)
 	camera.horizontalBorder = 256
 	camera.topBorder = 192
 	camera.bottomBorder = 256

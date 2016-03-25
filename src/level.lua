@@ -212,13 +212,11 @@ function level:saveData()
 		seed = self.offset,
 		player = {
 			name = player.name,
-			x = x, 
-			y = y, 
+			x = player.x, 
+			y = player.y, 
 			chunk = chunk
 		}
 	}
-	
-	PrintTable(data)
 	
 	local save = Tserial.pack(data, false, true)
 	love.filesystem.write(self.name.."/"..self.name..".data", save)
@@ -270,8 +268,6 @@ function level:save(chunk, chunkNum)
 				newLayer[x][index].y = y
 				
 				y = y + newLayer[x][index].len
-				
-				--print(x, newLayer[x][index].y, newLayer[x][index].id, newLayer[x][index].len)
 			end
 		end
 		
@@ -333,7 +329,6 @@ function level:load(chunkNum)
 		for y=1, self.worldHeight do
 			if not fgBlocks[x][y] then
 				local fgBlock = blockManager:getBlocks().air:new()
-				--fgBlock.spriteID = spriteBatch:add(fgBlock.quad, math.floor( x * blockManager.size ), math.floor( y * blockManager.size) )
 				fgBlock.x = 1 + self.offset + chunkNum * self.chunkWidth
 				fgBlock.y = y
 				
@@ -381,10 +376,12 @@ function level:loadData()
 	local file, size = love.filesystem.read(self.name.."/"..self.name..".data")
 	
 	local data = Tserial.unpack(file)
-	PrintTable(data)
+	
 	self.offset = data.seed
 	
-	player.x, player.y = level:worldToScreen(data.player.x, data.player.y, data.player.chunk)
+	--player.x, player.y = level:worldToScreen(data.player.x, data.player.y, data.player.chunk)
+	player.x = data.player.x
+	player.y = data.player.y
 	
 	return true
 end
