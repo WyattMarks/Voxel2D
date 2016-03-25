@@ -23,6 +23,8 @@ function menu:open()
 			
 			level:saveData()
 			
+			settings:save()
+			
 			love.event.quit()
 		end
 		

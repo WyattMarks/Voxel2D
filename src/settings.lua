@@ -15,4 +15,19 @@ settings.binds = {
 	pause = 'escape'
 }
 
+function settings:load()
+	if not love.filesystem.isFile("voxel2d.settings") then
+		return false
+	end
+	
+	local file, size = love.filesystem.read("voxel2d.settings")
+	for k,v in pairs(Tserial.unpack(file)) do
+		self[k] = v
+	end
+end
+
+function settings:save()
+	love.filesystem.write("voxel2d.settings", Tserial.pack(self, true, true))
+end
+
 return settings
