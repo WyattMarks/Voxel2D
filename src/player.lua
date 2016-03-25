@@ -59,7 +59,7 @@ function player:canPlace(x,y,chunk,layer)
 	playerY = playerY - blockManager.size / camera.sy
 	
 	local distance = math.floor(math.sqrt( (mouseX - playerX)^2 + (mouseY - playerY)^2 ) / blockManager.size)
-	if distance > 7 then
+	if distance >= settings.playerReach then
 		return false
 	end
 	
@@ -100,6 +100,20 @@ function player:checkPlace(dt)
 	end
 end
 
+function player:canMine()
+	local playerX, playerY = level:worldToScreen(self:getWorldCoords())
+	local mouseX, mouseY = love.mouse.getPosition()
+
+	playerX = playerX + blockManager.size / camera.sx / 2
+	playerY = playerY - blockManager.size / camera.sy
+	
+	local distance = math.floor(math.sqrt( (mouseX - playerX)^2 + (mouseY - playerY)^2 ) / blockManager.size)
+	if distance >= settings.playerReach then
+		return false
+	end
+	
+	return true
+end
 
 function player:checkMine(dt)
 	local x,y = love.mouse.getPosition()
@@ -125,7 +139,7 @@ function player:checkMine(dt)
 			oldDown = 1
 		end
 		
-		if down == oldDown then
+		if down == oldDown and self:canMine() then
 			self.mining = true
 			
 			self.sameActive = self.sameActive + dt
