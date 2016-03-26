@@ -55,9 +55,20 @@ function input:load()
 		end
 	end)
 
+	bind:addBind("instaBreak", settings.binds.instaMine, function(down)
+		if down then
+			player.instaBreak = not player.instaBreak
+			if player.instaBreak then
+				debug:add("InstaBreak", '')
+			else
+				debug:remove("InstaBreak")
+			end
+		end
+	end)
+
 	bind:addBind("debug", "g", function(down)
 		if down then
-			print(camera.x, player.x)
+			debug:print(settings.binds.instaMine)
 		end
 	end)
 end

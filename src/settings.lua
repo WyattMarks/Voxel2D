@@ -4,6 +4,7 @@ settings.hoverCursorColor = {r = 75, g = 75, b = 255}
 settings.playerReach = 7
 
 settings.binds = {
+	instaMine = 'b',
 	inventory = 'e',
 	right = 'd',
 	left = 'a',
@@ -12,7 +13,7 @@ settings.binds = {
 	jump = 'space',
 	breakPlaceMode = 'p',
 	fly = 'f',
-	pause = 'escape'
+	pause = 'escape',
 }
 
 function settings:load()
@@ -22,7 +23,17 @@ function settings:load()
 	
 	local file, size = love.filesystem.read("voxel2d.settings")
 	for k,v in pairs(Tserial.unpack(file)) do
-		self[k] = v
+		if type(v) == "table" then
+			if not self[k] then
+				self[k] = v
+			else
+				for key,val in pairs(v) do
+					self[k][key] = val
+				end
+			end
+		else
+			self[k] = v
+		end
 	end
 end
 

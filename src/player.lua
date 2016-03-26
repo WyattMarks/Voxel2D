@@ -10,6 +10,7 @@ player.down = false
 player.width = 16
 player.height = 32
 player.flying = false
+player.instaBreak = false
 player.yvel = 0
 player.mode = "break"
 player.breaking = {}
@@ -59,7 +60,7 @@ function player:canPlace(x,y,chunk,layer)
 	playerY = playerY - blockManager.size / camera.sy
 	
 	local distance = math.floor(math.sqrt( (mouseX - playerX)^2 + (mouseY - playerY)^2 ) / blockManager.size)
-	if distance >= settings.playerReach then
+	if distance >= settings.playerReach and not self.instaBreak then
 		return false
 	end
 	
@@ -108,7 +109,7 @@ function player:canMine()
 	playerY = playerY - blockManager.size / camera.sy
 	
 	local distance = math.floor(math.sqrt( (mouseX - playerX)^2 + (mouseY - playerY)^2 ) / blockManager.size)
-	if distance >= settings.playerReach then
+	if distance >= settings.playerReach and not self.instaBreak then
 		return false
 	end
 	
@@ -144,7 +145,12 @@ function player:checkMine(dt)
 			
 			self.sameActive = self.sameActive + dt
 			
-			if self.sameActive > (self.breaking.delay or 1) then
+			local delay = self.breaking.delay or 1
+			if self.instaBreak then
+				delay = 0
+			end
+			
+			if self.sameActive > delay then
 				local x, y, chunk = level:screenToWorld(x, y, true)
 				local toAdd = blockManager:getByID(blocks[self.breaking.name].dropID):new()
 				
