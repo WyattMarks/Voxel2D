@@ -20,12 +20,13 @@ pauseMenu = require("src/gui/pauseMenu")
 button = require("src/gui/button")
 font = require("src/gui/font")
 
+--Input related
+bind = require("src/input/bind")
 
-bind = require("src/bind")
-input = require("src/input")
+
+
+game = require("src/game")
 settings = require("src/settings")
-player = require("src/player")
-inventory = require("src/inventory")
 
 
 function PrintTable(tbl, tabs)
@@ -66,39 +67,22 @@ end
 
 function love.load()
 	math.randomseed(os.time())
-	level.offset = math.random(-10000,100000)
 	font:load()
-	blockManager:load()
 	settings:load()
-	input:load()
 	screenWidth = love.graphics.getWidth()
 	screenHeight = love.graphics.getHeight()
 	
-	blocks = blockManager:getBlocks()
-	
-	camera:scale(.5,.5)
-	--camera:scale(3,3)
-	camera.speed = 128
-	camera.horizontalBorder = 256
-	camera.topBorder = 192
-	camera.bottomBorder = 256
-	camera.xOffset = 0
-	camera.yOffset = 0
-	
-	world = bump.newWorld(64)
-	
-	level:loadData()
-	player:load()
-	inventory:load()
+	game:load()
 end
 
 
 function love.update(dt) 
-	if not level.paused then
-		level:update(dt)
-		player:update(dt)
-	else
-		pauseMenu:update(dt)
+	if game.running then
+		if not game.paused then
+			game:update(dt)
+		else
+			pauseMenu:update(dt)
+		end
 	end
 	
 	debug:update(dt)
@@ -106,17 +90,8 @@ end
 
 
 function love.draw()
-	camera:set()
-		level:draw()
-		player:draw()
-	camera:unset()
-	
-	hud:draw()
-	inventory:draw()
-	debug:draw()
-	
-	if level.paused then
-		pauseMenu:draw()
+	if game.running then
+		game:draw()
 	end
 end
 
@@ -129,15 +104,13 @@ function love.keyreleased(key)
 end
 
 function love.mousepressed( x, y, button, istouch )
-	player:mousepressed(x, y, button)
-	inventory:mousepressed(x,y,button)
+	game:mousepressed(x,y,button,istouch)
 end
 
 function love.mousereleased(x, y, button, istouch)
-	player:mousereleased(x, y, button)
-	inventory:mousereleased(x, y, button)
+	game:mousereleased(x,y,button,istouch)
 end
 
 function love.wheelmoved(x,y)
-	player:wheelmoved(x,y)
+	game:wheelmoved(x,y)
 end

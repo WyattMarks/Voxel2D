@@ -80,7 +80,7 @@ function player:checkPlace(dt)
 	
 	local lastPlace = self.lastPlace
 	if down ~= 0 then
-		local item = inventory.inventory[self.activeSlot][inventory.height]
+		local item = self.inventory.inventory[self.activeSlot][self.inventory.height]
 		if item.delay then
 			local x, y, chunk = level:screenToWorld(x, y, true)
 			
@@ -92,9 +92,9 @@ function player:checkPlace(dt)
 				level:placeBlock(block, x, y, chunk, block.bg)
 				
 				if item.quantity <= 1 then
-					inventory.inventory[self.activeSlot][inventory.height] = {}
+					self.inventory.inventory[self.activeSlot][self.inventory.height] = {}
 				else
-					inventory.inventory[self.activeSlot][inventory.height].quantity = item.quantity - 1
+					self.inventory.inventory[self.activeSlot][self.inventory.height].quantity = item.quantity - 1
 				end
 			end
 		end
@@ -152,9 +152,9 @@ function player:checkMine(dt)
 			
 			if self.sameActive > delay then
 				local x, y, chunk = level:screenToWorld(x, y, true)
-				local toAdd = blockManager:getByID(blocks[self.breaking.name].dropID):new()
+				local toAdd = blockManager:getByID(self.breaking.dropID):new()
 				
-				if inventory:add(toAdd, 1) then
+				if self.inventory:add(toAdd, 1) then
 					level:deleteBlock(x, y, chunk, self.breaking.bg)
 					self.mining = false
 				end
@@ -168,14 +168,16 @@ end
 function player:load()
 	world:add(self, self.x - .5, self.y, self.width - 1, self.height)
 	
-	camera:move(player.x - screenWidth / 3, player.y - screenHeight / 3)
+	camera:move(player.x - screenWidth / 3, self.y - screenHeight / 3)
 end
 
 function player:mousepressed(x, y, button)
+	self.inventory:mousepressed(x,y,button)
 end
 
 function player:mousereleased(x, y, button)
 	self.sameActive = 0
+	self.inventory:mousereleased(x, y, button)
 end
 
 function player:draw()
@@ -189,38 +191,6 @@ function player:update(dt)
 	debug:add("Coords", "("..tostring(x)..","..tostring(y)..")")
 	debug:add("Mode", self.mode)
 	local distance = math.floor( self.speed * dt )
-	local camDist = math.floor( camera.speed * dt )
-	
-	
-	local oldXOff = camera.xOffset
-	local oldYOff = camera.yOffset
-	
-	if self.x - camera.x > (screenWidth - camera.horizontalBorder - self.width) * camera.sx then
-		camera:move(camDist)
-		camera.xOffset = (self.x - camera.x) - (screenWidth - camera.horizontalBorder - self.width) * camera.sx
-	end
-	
-	if self.x - camera.x < camera.horizontalBorder * camera.sx then
-		camera:move(-camDist)
-		camera.xOffset = (self.x - camera.x) - camera.horizontalBorder * camera.sx
-	end
-	
-	if self.y - camera.y > (screenHeight - camera.bottomBorder - self.height) * camera.sy then
-		camera:move(0, camDist)
-		camera.yOffset = (self.y - camera.y) - (screenHeight - camera.bottomBorder - self.height) * camera.sy
-	end
-	
-	if self.y - camera.y < camera.topBorder * camera.sy then
-		camera:move(0, -camDist)
-		camera.yOffset = (self.y - camera.y) - camera.topBorder * camera.sy
-	end
-	
-	if oldXOff == camera.xOffset then
-		camera.xOffset = 0 
-	end
-	if oldYOff == camera.yOffset then
-		camera.yOffset = 0 
-	end
 	
 	local xMove = self.x
 	local yMove = self.y

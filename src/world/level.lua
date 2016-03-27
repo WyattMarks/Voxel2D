@@ -9,6 +9,10 @@ function level:getChunk(x) --get the chunk from the x coordinate
 	return math.floor(x * camera.sx / (self.chunkWidth * blockManager.size * camera.sx)) --+ ( x > 0 and 1 or 0)
 end
 
+function level:load()
+	self.offset = math.random(-10000,100000)
+	self:loadData()
+end
 
 function level:screenToWorld(x, y, actuallyScreen)
 	local cameraX = camera.x
@@ -55,10 +59,10 @@ end
 
 
 function level:generateWorld(num)
-	local curChunk = self:getChunk(player.x)
+	local curChunk = self:getChunk(game:getLocalPlayer().x)
 	
 	if not self.chunks[curChunk + num] then
-		if self:load(curChunk + num) then
+		if self:loadChunk(curChunk + num) then
 			debug:print("Loaded chunk <"..tostring(curChunk + num)..">")
 		else
 			self.chunks[curChunk + num] = chunk:generate(curChunk + num)
@@ -67,7 +71,7 @@ function level:generateWorld(num)
 	end
 	
 	if not self.chunks[curChunk - num - 1] then
-		if self:load(curChunk - num - 1) then
+		if self:loadChunk(curChunk - num - 1) then
 			debug:print("Loaded chunk <"..tostring(curChunk - num - 1)..">")
 		else
 			self.chunks[curChunk - num - 1] = chunk:generate(curChunk - num - 1)
@@ -82,7 +86,7 @@ end
 
 
 function level:unloadWorld(num)
-	local curChunk = self:getChunk(player.x)
+	local curChunk = self:getChunk(game:getLocalPlayer().x)
 	
 	for k,v in pairs(self.chunks) do
 		if math.abs(curChunk - k) > 10 then
@@ -131,7 +135,7 @@ function level:deleteBlock(x, y, chunk, bg)
 		world:remove(oldBlock) --Remove the block from the physics
 	end
 	
-	local newBlock = blocks.air:new()
+	local newBlock = blockManager:getBlock('air'):new()
 	newBlock.bg = bg
 	newBlock:updateQuad()
 	
@@ -219,10 +223,12 @@ function level:saveData()
 	
 	data.seed = self.offset
 	
-	data[player.name] = {
-		x = player.x,
-		y = player.y,
-	}
+	for k,v in pairs(game.players) do
+		data[v.name] = {
+			x = v.x,
+			y = v.y,
+		}
+	end
 	
 	local save = Tserial.pack(data, false, true)
 	love.filesystem.write(self.name.."/"..self.name..".data", save)
@@ -291,7 +297,7 @@ function level:save(chunk, chunkNum)
 	debug:print("Saved chunk <"..tostring(chunkNum)..">")
 end
 
-function level:load(chunkNum)
+function level:loadChunk(chunkNum)
 	if not love.filesystem.isDirectory(self.name) then
 		return false
 	end
@@ -386,9 +392,11 @@ function level:loadData()
 	
 	self.offset = data.seed
 	
-	if data[player.name] then
-		player.x = data[player.name].x
-		player.y = data[player.name].y
+	for k,v in pairs(game.players) do
+		if data[v.name] then
+			v.x = data[v.name].x
+			v.y = data[v.name].y
+		end
 	end
 	
 	return true

@@ -3,7 +3,7 @@ menu.gameName = "Voxel2D"
 
 
 function menu:open()
-	level.paused = true
+	game.paused = true
 	if not self.exitButton then
 		self.exitButton = button:new({text = "Exit", font = font.large, width = 150, height = 50, x = screenWidth / 2 - 250, y = screenHeight / 2})
 		self.exitButton.highlightColor = {r = 90, g = 90, b = 90}
@@ -15,17 +15,7 @@ function menu:open()
 		
 		
 		function self.exitButton.onClick(btn)
-			for k,v in pairs(level.chunks) do
-				level:save(v, k)
-			end
-			
-			inventory:save()
-			
-			level:saveData()
-			
-			settings:save()
-			
-			love.event.quit()
+			game:unload()
 		end
 		
 		function self.resumeButton.onClick(btn)
@@ -35,7 +25,7 @@ function menu:open()
 end
 
 function menu:close()
-	level.paused = false
+	game.paused = false
 end
 
 function menu:draw()

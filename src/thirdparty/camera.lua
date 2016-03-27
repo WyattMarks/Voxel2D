@@ -4,12 +4,52 @@ camera.y = 0
 camera.sx = 1
 camera.sy = 1
 camera.rotation = 0
+camera.target = {x=1,y=1,width=10,height=10}
 
 function camera:set()
 	love.graphics.push()
 	love.graphics.rotate(-self.rotation)
 	love.graphics.scale(1 / self.sx, 1 / self.sy)
 	love.graphics.translate(-self.x, -self.y)
+end
+
+function camera:follow(target)
+	self.target = target
+end
+
+function camera:update(dt)
+	local camDist = math.floor( camera.speed * dt )
+	
+	
+	local oldXOff = self.xOffset
+	local oldYOff = self.yOffset
+	
+	if self.target.x - self.x > (screenWidth - self.horizontalBorder - self.target.width) * self.sx then
+		self:move(camDist)
+		self.xOffset = (self.target.x - self.x) - (screenWidth - self.horizontalBorder - self.target.width) * self.sx
+	end
+	
+	if self.target.x - self.x < self.horizontalBorder * self.sx then
+		self:move(-camDist)
+		self.xOffset = (self.target.x - self.x) - self.horizontalBorder * self.sx
+	end
+	
+	if self.target.y - self.y > (screenHeight - self.bottomBorder - self.target.height) * self.sy then
+		self:move(0, camDist)
+		self.yOffset = (self.target.y - self.y) - (screenHeight - self.bottomBorder - self.target.height) * self.sy
+	end
+	
+	if self.target.y - self.y < self.topBorder * self.sy then
+		self:move(0, -camDist)
+		self.yOffset = (self.target.y - self.y) - self.topBorder * self.sy
+	end
+	
+	if oldXOff == self.xOffset then
+		self.xOffset = 0 
+	end
+	if oldYOff == self.yOffset then
+		self.yOffset = 0 
+	end
 end
 
 function camera:unset()

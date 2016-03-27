@@ -11,7 +11,7 @@ function blockManager:load()
 	self.texture:setFilter("nearest", "nearest")
 	self.textureWidth, self.textureHeight = self.texture:getDimensions()
 	self:add(block:new("air", 0, {canBG = true, transparent = true, dropID = 0}))
-	self:add(block:new("dirt", 1, {delay = .01, canBG = true, dropID = 1}))
+	self:add(block:new("dirt", 1, {delay = .75, canBG = true, dropID = 1}))
 	self:add(block:new("stone", 2, {delay = 1.12, canBG = true, dropID = 1}))
 	self:add(block:new("grass", 3, {delay = .75, canBG = false, dropID = 1}))
 	self:add(block:new("gravel", 4, {delay = 1, canBG = true, dropID = 4}))
@@ -28,6 +28,10 @@ end
 
 function blockManager:getBlocks()
 	return self.blocks
+end
+
+function blockManager:getBlock(name)
+	return self.blocks[name]
 end
 
 function blockManager:getByID(id)

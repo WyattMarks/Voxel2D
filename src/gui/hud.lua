@@ -5,7 +5,7 @@ hud.hotbar.height = 34
 
 function hud:draw()
 	debug:add("FPS", love.timer.getFPS())
-	
+	local player = game:getLocalPlayer()
 	
 	local mouseX, mouseY = love.mouse.getPosition()
 	local x, y, chunk = level:screenToWorld(mouseX, mouseY, true)
@@ -37,22 +37,22 @@ function hud:draw()
 	love.graphics.rectangle('fill', x, y, self.hotbar.width, self.hotbar.height)
 	
 	
-	for w=1, inventory.width do
+	for w=1, player.inventory.width do
 		local x = x + w * 34 - 33
 		love.graphics.setColor(50,50,50)
 		love.graphics.rectangle('fill', x, y + 1, 32, 32)
 		
-		if inventory.inventory[w][inventory.height].id then
+		if player.inventory.inventory[w][player.inventory.height].id then
 			love.graphics.setColor(255,255,255)
-			local item = inventory.inventory[w][inventory.height]
+			local item = player.inventory.inventory[w][player.inventory.height]
 			love.graphics.draw(blockManager.texture, item.quad, x + 1, y + 2, 0, 1.875, 1.875)
 
 				
 			if item.quantity > 1 then
 				love.graphics.setColor(255,255,255)
-				love.graphics.setFont( inventory.font )
-				local y = y + 32 - inventory.font:getHeight()
-				local x = x + 31 - inventory.font:getWidth(tostring(item.quantity))
+				love.graphics.setFont( player.inventory.font )
+				local y = y + 32 - player.inventory.font:getHeight()
+				local x = x + 31 - player.inventory.font:getWidth(tostring(item.quantity))
 				love.graphics.print(tostring(item.quantity), x, y)
 			end
 		end

@@ -29,6 +29,8 @@ function inventory:save()
 		love.filesystem.createDirectory(level.name)
 	end
 	
+	local playerName = self.owner
+	
 	local toSave = {}
 	for w,col in pairs(self.inventory) do
 		if not toSave[w] then
@@ -42,9 +44,9 @@ function inventory:save()
 	
 	local final = Tserial.pack(toSave, false, true)
 	
-	love.filesystem.write(level.name.."/"..player.name..".inventory", final)
+	love.filesystem.write(level.name.."/"..playerName..".inventory", final)
 	
-	debug:print("Saved "..player.name.."'s inventory")
+	debug:print("Saved "..playerName.."'s inventory")
 end
 
 function inventory:loadSave()
@@ -52,11 +54,13 @@ function inventory:loadSave()
 		return false
 	end
 	
-	if not love.filesystem.isFile(level.name.."/"..player.name..".inventory") then
+	local playerName = self.owner
+	
+	if not love.filesystem.isFile(level.name.."/"..playerName..".inventory") then
 		return false
 	end
 	
-	local file, size = love.filesystem.read(level.name.."/"..player.name..".inventory")
+	local file, size = love.filesystem.read(level.name.."/"..playerName..".inventory")
 	local saved = Tserial.unpack(file)
 	
 	for w, col in pairs(saved) do
@@ -66,7 +70,6 @@ function inventory:loadSave()
 		
 		for h, block in pairs(col) do
 			if block.id then
-				print(block.id, block.quantity)
 				self.inventory[w][h] = blockManager:getByID(block.id):new()
 				self.inventory[w][h].quantity = block.quantity
 			else
@@ -75,6 +78,7 @@ function inventory:loadSave()
 		end
 	end
 	
+	debug:print("Loaded "..playerName.."'s inventory")
 	return true
 end
 
