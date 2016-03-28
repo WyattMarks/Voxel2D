@@ -93,14 +93,29 @@ function love.draw()
 	if game.running then
 		game:draw()
 	end
+	
+	--[[love.graphics.setColor(120,120,120,120)
+	love.graphics.setFont(font.small)
+	local text = "Meow this is a test. I am text, maybe I'll wrap. Who knows. I am so bored, my stomach hurts and I don't know why and I am sad about it. I miss Shreya"
+	local width, wrappedText = font.small:getWrap(text, 400)
+	
+	love.graphics.rectangle('fill', 300, 50, 400, #wrappedText * font.small:getHeight())
+	love.graphics.setColor(255,255,255)
+	love.graphics.rectangle('fill', 300 + font.small:getWidth(wrappedText[#wrappedText]), 50 + (#wrappedText-1) * font.small:getHeight(), font.small:getWidth(" "), font.small:getHeight())
+	love.graphics.printf(text, 300,50,400)]]
 end
 
 function love.keypressed(key, isrepeat)
 	bind:keypressed(key, isrepeat)
+	game:keypressed(key, isrepeat)
 end
 
 function love.keyreleased(key)
 	bind:keyreleased(key)
+end
+
+function love.textinput(text)
+	game:textinput(text)
 end
 
 function love.mousepressed( x, y, button, istouch )

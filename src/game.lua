@@ -24,6 +24,7 @@ function game:load()
 	
 	level:load()
 	self:getLocalPlayer():load()
+	self.chatbox = require("src/gui/chatbox")
 	self.running = true
 end
 
@@ -59,6 +60,7 @@ function game:update(dt)
 	for k,player in pairs(self.players) do
 		player:update(dt)
 	end
+	self.chatbox:update(dt)
 end
 
 function game:draw()
@@ -72,6 +74,7 @@ function game:draw()
 	hud:draw()
 	self:getLocalPlayer().inventory:draw()
 	debug:draw()
+	self.chatbox:draw()
 	
 	if game.paused then
 		pauseMenu:draw()
@@ -107,9 +110,13 @@ function game:wheelmoved(x,y)
 	self:getLocalPlayer():wheelmoved(x,y)
 end
 
+function game:textinput(text)
+	self.chatbox:textinput(text)
+end
 
-
-
+function game:keypressed(key, isrepeat)
+	self.chatbox:keypressed(key, isrepeat)
+end
 
 
 return game

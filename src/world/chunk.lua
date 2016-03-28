@@ -64,7 +64,7 @@ function chunk:generate(index)
 				end
 				
 				if y == level.worldHeight then
-					fgBlock = blockManager:getBlock('bedRock'):new()
+					fgBlock = blockManager:getBlock('bedrock'):new()
 				end
 				
 				bgBlock = blockManager:getBlock('stone'):new()

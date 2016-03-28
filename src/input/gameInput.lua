@@ -72,6 +72,13 @@ function input:load()
 			debug:print(settings.binds.instaMine)
 		end
 	end)
+
+	bind:addBind("chat", "t", function(down)
+		if down then
+			game.chatbox.textbox.active = true
+			game.input:unload()
+		end
+	end)
 end
 
 function input:unload()
@@ -86,7 +93,8 @@ function input:unload()
 	bind:removeBind("pFly")
 
 	bind:removeBind("pause")
-
+	bind:removeBind("chat")
+	
 	bind:removeBind("instaBreak")
 
 	bind:removeBind("debug")
