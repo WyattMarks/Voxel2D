@@ -62,22 +62,25 @@ function level:generateWorld(num)
 	local curChunk = self:getChunk(game:getLocalPlayer().x)
 	
 	if not self.chunks[curChunk + num] then
-		if self:loadChunk(curChunk + num) then
-			debug:print("Loaded chunk <"..tostring(curChunk + num)..">")
-		else
+		if not self:loadChunk(curChunk + num) then
 			self.chunks[curChunk + num] = chunk:generate(curChunk + num)
-			debug:print("Generated chunk <"..tostring(curChunk + num)..">")
 		end
 	end
 	
 	if not self.chunks[curChunk - num - 1] then
-		if self:loadChunk(curChunk - num - 1) then
-			debug:print("Loaded chunk <"..tostring(curChunk - num - 1)..">")
-		else
+		if not self:loadChunk(curChunk - num - 1) then
 			self.chunks[curChunk - num - 1] = chunk:generate(curChunk - num - 1)
-			debug:print("Generated chunk <"..tostring(curChunk - num - 1)..">")
 		end
 	end
+	
+	if type(self.chunks[curChunk - num - 1]) == "table" and not self.chunks[curChunk - num - 1].visible then
+		self.chunks[curChunk - num - 1].visible = true
+	end
+	
+	if type(self.chunks[curChunk + num]) == "table" and not self.chunks[curChunk + num].visible then
+		self.chunks[curChunk + num].visible = true
+	end
+	
 	
 	if num > 0 then
 		self:generateWorld(num-1)
@@ -90,7 +93,9 @@ function level:unloadWorld(num)
 	
 	for k,v in pairs(self.chunks) do
 		if math.abs(curChunk - k) > 10 then
-			self:save(self.chunks[k], k )
+			if server.hosting then
+				self:save(self.chunks[k], k )
+			end
 			
 			for x, col in pairs(self.chunks[k][1]) do
 				for y, block in pairs(col) do
@@ -116,7 +121,9 @@ end
 function level:draw()
 	love.graphics.setColor(255,255,255)
 	for chunkIndex,chunk in pairs(self.chunks) do
-		love.graphics.draw(chunk[3], chunkIndex * level.chunkWidth * blockManager.size, 0)
+		if chunk ~= "requested" and chunk.visible then
+			love.graphics.draw(chunk[3], chunkIndex * level.chunkWidth * blockManager.size, 0)
+		end
 	end
 end
 
@@ -230,16 +237,12 @@ function level:saveData()
 		}
 	end
 	
-	local save = Tserial.pack(data, false, true)
+	local save = Tserial.pack(data, false, false)
 	love.filesystem.write(self.name.."/"..self.name..".data", save)
 
 end
 
-function level:save(chunk, chunkNum)
-	if not love.filesystem.isDirectory(self.name) then
-		love.filesystem.createDirectory(self.name)
-	end
-	
+function level:createSaveFile(chunk, chunkNum)
 	local function makeSave(layer)
 		local newLayer = {}
 		local layNum = 1
@@ -292,24 +295,25 @@ function level:save(chunk, chunkNum)
 	
 	local final = Tserial.pack({fgBlocks, bgBlocks}, false, true)
 	
+	return final
+end
+
+
+function level:save(chunk, chunkNum)
+	if not love.filesystem.isDirectory(self.name) then
+		love.filesystem.createDirectory(self.name)
+	end
+	
+	local final = self:createSaveFile(chunk, chunkNum)
+	
 	love.filesystem.write(self.name.."/"..tostring(chunkNum)..".chunk", final)
 	
 	debug:print("Saved chunk <"..tostring(chunkNum)..">")
 end
 
-function level:loadChunk(chunkNum)
-	if not love.filesystem.isDirectory(self.name) then
-		return false
-	end
-	
-	if not love.filesystem.isFile(self.name.."/"..tostring(chunkNum)..".chunk") then
-		return false
-	end
-	
+function level:loadSaveFile(chunkNum, saveFile)
+	local saved = Tserial.unpack(saveFile)
 	local spriteBatch = love.graphics.newSpriteBatch(blockManager.texture, level.chunkWidth * level.worldHeight * 2)
-	
-	local file, size = love.filesystem.read(self.name.."/"..tostring(chunkNum)..".chunk")
-	local saved = Tserial.unpack(file)
 	
 	local fgBlocks = {}
 	local bgBlocks = {}
@@ -374,10 +378,36 @@ function level:loadChunk(chunkNum)
 	end
 	
 	self.chunks[chunkNum] = {fgBlocks, bgBlocks, spriteBatch}
+	debug:print("Loaded chunk <"..tostring(chunkNum)..">")
+end
+
+function level:loadChunk(chunkNum)
+	if not server.hosting then
+		client:send("LOAD"..tostring(chunkNum))
+		self.chunks[chunkNum] = "requested"
+		return true
+	end
+	
+	
+	if not love.filesystem.isDirectory(self.name) then
+		return false
+	end
+	
+	if not love.filesystem.isFile(self.name.."/"..tostring(chunkNum)..".chunk") then
+		return false
+	end
+	
+	local file, size = love.filesystem.read(self.name.."/"..tostring(chunkNum)..".chunk")
+	
+	self:loadSaveFile(chunkNum, file)
+	
 	return true
 end
 
 function level:loadData()
+	if not server.hosting then
+		return false
+	end
 	if not love.filesystem.isDirectory(self.name) then
 		return false
 	end

@@ -69,11 +69,11 @@ function input:load()
 
 	bind:addBind("debug", "g", function(down)
 		if down then
-			debug:print(settings.binds.instaMine)
+			game.chatbox:addMessage("proCr4t3r", "i fooked your mum and ill steal your diamonds too")
 		end
 	end)
 
-	bind:addBind("chat", "t", function(down)
+	bind:addBind("chat", settings.binds.chat, function(down)
 		if down then
 			game.chatbox.textbox.active = true
 			game.input:unload()

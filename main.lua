@@ -7,6 +7,11 @@ bump = require("src/thirdparty/bump")
 require("src/thirdparty/camera")
 require("src/thirdparty/Tserial")
 
+--Networking related
+require("enet")
+server = require("src/networking/server")
+client = require("src/networking/client")
+
 --World related
 chunk = require("src/world/chunk")
 level = require("src/world/level")
@@ -19,12 +24,14 @@ hud = require("src/gui/hud")
 pauseMenu = require("src/gui/pauseMenu")
 button = require("src/gui/button")
 font = require("src/gui/font")
+textbox = require("src/gui/textbox")
+chatbox = require("src/gui/chatbox")
 
 --Input related
 bind = require("src/input/bind")
 
-
-
+inventory = require("src/inventory")
+player = require("src/player")
 game = require("src/game")
 settings = require("src/settings")
 
@@ -73,10 +80,13 @@ function love.load()
 	screenHeight = love.graphics.getHeight()
 	
 	game:load()
+	
+	server:load()
+	client:load()
 end
 
 
-function love.update(dt) 
+function love.update(dt)
 	if game.running then
 		if not game.paused then
 			game:update(dt)
@@ -84,7 +94,10 @@ function love.update(dt)
 			pauseMenu:update(dt)
 		end
 	end
-	
+	if server.hosting then
+		server:update(dt)
+	end
+	client:update(dt)
 	debug:update(dt)
 end
 
@@ -93,16 +106,6 @@ function love.draw()
 	if game.running then
 		game:draw()
 	end
-	
-	--[[love.graphics.setColor(120,120,120,120)
-	love.graphics.setFont(font.small)
-	local text = "Meow this is a test. I am text, maybe I'll wrap. Who knows. I am so bored, my stomach hurts and I don't know why and I am sad about it. I miss Shreya"
-	local width, wrappedText = font.small:getWrap(text, 400)
-	
-	love.graphics.rectangle('fill', 300, 50, 400, #wrappedText * font.small:getHeight())
-	love.graphics.setColor(255,255,255)
-	love.graphics.rectangle('fill', 300 + font.small:getWidth(wrappedText[#wrappedText]), 50 + (#wrappedText-1) * font.small:getHeight(), font.small:getWidth(" "), font.small:getHeight())
-	love.graphics.printf(text, 300,50,400)]]
 end
 
 function love.keypressed(key, isrepeat)

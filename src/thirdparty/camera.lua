@@ -15,6 +15,8 @@ end
 
 function camera:follow(target)
 	self.target = target
+	
+	self:move(target.x - screenWidth / 3, target.y - screenHeight / 3)
 end
 
 function camera:update(dt)

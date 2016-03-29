@@ -94,6 +94,8 @@ function chunk:generate(index)
 		end
 	end
 	
+	debug:print("Generated chunk <"..tostring(index)..">")
+	
 	return {fgBlocks, bgBlocks, spriteBatch}
 end
 

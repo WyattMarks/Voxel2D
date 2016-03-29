@@ -294,7 +294,13 @@ function inventory:update(dt)
 	end
 end
 
-
+function inventory:new()
+	local new = {}
+	for k,v in pairs(self) do
+		new[k] = v
+	end
+	return new
+end
 
 
 

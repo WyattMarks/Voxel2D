@@ -1,17 +1,14 @@
 local chatbox = {}
 chatbox.text = {}
-chatbox.textbox = require("src/gui/textbox")
+chatbox.textbox = textbox:new()
 chatbox.width = 400
-chatbox.font = font.small
-chatbox.textbox.font = chatbox.font
 chatbox.x = 10
 chatbox.textbox.x = chatbox.x
-chatbox.textbox.y = screenHeight - chatbox.font:getHeight() - 4
 chatbox.textbox.canClick = false
 chatbox.showMessageTime = 10
 
 function chatbox:addMessage(sender, text)
-	self.text[#self.text + 1] = {0, {{50,50,255}, sender.." ", {255,255,255}, text}}
+	self.text[#self.text + 1] = {0, {{50,50,255}, sender, {255,255,255}, text}}
 end
 
 function chatbox:update(dt)
@@ -57,7 +54,11 @@ function chatbox:keypressed(key, isrepeat)
 	if key == "return" and self.textbox.active then
 		self.textbox.active = false
 		if self.textbox.text ~= '' then
-			self:addMessage(game:getLocalPlayer().name, self.textbox.text)
+			client:send("CHAT"..game:getLocalPlayer().name.." "..self.textbox.text)
+		end
+		
+		if self.textbox.text:sub(1,1) == '/' then
+			loadstring(self.textbox.text:sub(2))()
 		end
 		self.textbox.text = ''
 		self.textbox.drawText = ''
@@ -70,7 +71,13 @@ function chatbox:textinput(text)
 	self.textbox:textinput(text)
 end
 
-
+function chatbox:new()
+	local new = {}
+	for k,v in pairs(self) do
+		new[k] = v
+	end
+	return new
+end
 
 
 

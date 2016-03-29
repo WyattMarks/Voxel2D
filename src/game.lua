@@ -1,6 +1,6 @@
 local game = {}
 game.players = {}
-
+game.toLoad = {}
 
 function game:load()
 	self.input = require("src/input/gameInput")
@@ -18,24 +18,47 @@ function game:load()
 	
 	world = bump.newWorld(64)
 	
-	self:addPlayer('player', true)
+	self:addPlayer('player'..tostring(math.random(0,10)), true)
 	
 	camera:follow(self:getLocalPlayer())
 	
 	level:load()
-	self:getLocalPlayer():load()
-	self.chatbox = require("src/gui/chatbox")
+	self.chatbox = chatbox:new()
+	self.chatbox.font = font.small
+	self.chatbox.textbox.font = self.chatbox.font
+	self.chatbox.textbox.y = screenHeight - self.chatbox.font:getHeight() - 4
 	self.running = true
 end
 
+function game:network(name, peer)
+	local player = self:getPlayer(name)
+	if player then
+		player.peer = peer
+	else
+		self.toLoad[#self.toLoad+1] = {name, peer}
+	end
+end
+
 function game:addPlayer(name, isLocal)
-	local player = require("src/player")
+	local player = player:new()
 	player.name = name
 	player.localPlayer = isLocal
-	player.inventory = require("src/inventory")
+	player.inventory = inventory:new()
 	player.inventory.owner = player.name
 	player.inventory:load()
+	
+	if #self.toLoad > 0 then
+		for k,v in pairs(self.toLoad) do
+			if name == v[1] then
+				player.peer = v[2]
+				self.toLoad[k] = nil
+			end
+		end
+	end
+	
 	self.players[#self.players + 1] = player
+	
+	player:load()
 end
 
 function game:getLocalPlayer()

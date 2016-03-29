@@ -49,7 +49,7 @@ function textbox:update(dt)
 	
 	self.wasMouseDown = love.mouse.isDown(1)
 	
-	if self.wasMouseDown and not mouseOver then
+	if self.wasMouseDown and not mouseOver and self.canClick then
 		self.active = false
 	end
 	
@@ -76,6 +76,13 @@ function textbox:draw()
 	love.graphics.print(self.drawText, self.x, self.y)
 end
 
+function textbox:new()
+	local new = {}
+	for k,v in pairs(self) do
+		new[k] = v
+	end
+	return new
+end
 
 
 

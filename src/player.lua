@@ -85,7 +85,7 @@ function player:checkPlace(dt)
 			local x, y, chunk = level:screenToWorld(x, y, true)
 			
 			if (lastPlace[1] ~= x or lastPlace[2] ~= y) and self:canPlace(x, y, chunk, down) then
-				local block = blocks[item.name]:new()
+				local block = blockManager.blocks[item.name]:new()
 				block.bg = down == 2
 				block:updateQuad()
 				
@@ -167,8 +167,6 @@ end
 
 function player:load()
 	world:add(self, self.x - .5, self.y, self.width - 1, self.height)
-	
-	camera:move(player.x - screenWidth / 3, self.y - screenHeight / 3)
 end
 
 function player:mousepressed(x, y, button)
@@ -241,6 +239,14 @@ function player:update(dt)
 	else
 		self:checkPlace()
 	end
+end
+
+function player:new()
+	local new = {}
+	for k,v in pairs(self) do
+		new[k] = v
+	end
+	return new
 end
 
 return player

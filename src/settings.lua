@@ -14,6 +14,7 @@ settings.binds = {
 	breakPlaceMode = 'p',
 	fly = 'f',
 	pause = 'escape',
+	chat = 't',
 }
 
 function settings:load()
@@ -35,6 +36,8 @@ function settings:load()
 			self[k] = v
 		end
 	end
+	
+	debug:print("Loaded voxel2d.settings")
 end
 
 function settings:save()
