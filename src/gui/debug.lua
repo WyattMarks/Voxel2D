@@ -32,6 +32,7 @@ end
 
 
 function debug:draw()
+	if not self.on then return end
 	local y = 10
 	
 	if type(self.font) == "table" then

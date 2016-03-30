@@ -30,6 +30,7 @@ chatbox = require("src/gui/chatbox")
 --Input related
 bind = require("src/input/bind")
 
+menu = require('src/menu')
 inventory = require("src/inventory")
 player = require("src/player")
 game = require("src/game")
@@ -73,16 +74,14 @@ end
 
 
 function love.load()
+	love.graphics.setDefaultFilter( "nearest", "nearest" )
 	math.randomseed(os.time())
 	font:load()
 	settings:load()
 	screenWidth = love.graphics.getWidth()
 	screenHeight = love.graphics.getHeight()
 	
-	game:load()
-	
-	server:load()
-	client:load()
+	menu:load()
 end
 
 
@@ -93,24 +92,33 @@ function love.update(dt)
 		else
 			pauseMenu:update(dt)
 		end
+		
+		if server.hosting then
+			server:update(dt)
+		end
+		client:update(dt)
+		debug:update(dt)
+	else
+		menu:update(dt)
 	end
-	if server.hosting then
-		server:update(dt)
-	end
-	client:update(dt)
-	debug:update(dt)
 end
 
 
 function love.draw()
 	if game.running then
 		game:draw()
+	else
+		menu:draw()
 	end
 end
 
 function love.keypressed(key, isrepeat)
 	bind:keypressed(key, isrepeat)
-	game:keypressed(key, isrepeat)
+	if game.running then
+		game:keypressed(key, isrepeat)
+	else
+		menu:keypressed(key, isrepeat)
+	end
 end
 
 function love.keyreleased(key)
@@ -118,17 +126,27 @@ function love.keyreleased(key)
 end
 
 function love.textinput(text)
-	game:textinput(text)
+	if game.running then
+		game:textinput(text)
+	else
+		menu:textinput(text)
+	end
 end
 
 function love.mousepressed( x, y, button, istouch )
-	game:mousepressed(x,y,button,istouch)
+	if game.running then
+		game:mousepressed(x,y,button,istouch)
+	end
 end
 
 function love.mousereleased(x, y, button, istouch)
-	game:mousereleased(x,y,button,istouch)
+	if game.running then
+		game:mousereleased(x,y,button,istouch)
+	end
 end
 
 function love.wheelmoved(x,y)
-	game:wheelmoved(x,y)
+	if game.running then
+		game:wheelmoved(x,y)
+	end
 end

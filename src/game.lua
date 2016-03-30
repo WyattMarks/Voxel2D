@@ -118,7 +118,7 @@ function game:unload()
 	level:saveData()
 	settings:save()
 	
-	love.event.quit()
+	self.running = false
 end
 
 function game:mousepressed(x, y, button, istouch)
