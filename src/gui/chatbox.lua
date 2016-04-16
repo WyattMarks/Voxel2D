@@ -6,6 +6,8 @@ chatbox.x = 10
 chatbox.textbox.x = chatbox.x
 chatbox.textbox.canClick = false
 chatbox.showMessageTime = 10
+chatbox.sent = {}
+chatbox.index = 0
 
 function chatbox:addMessage(sender, text)
 	self.text[#self.text + 1] = {0, {{50,50,255}, sender, {255,255,255}, text}}
@@ -55,6 +57,7 @@ function chatbox:keypressed(key, isrepeat)
 		self.textbox.active = false
 		if self.textbox.text ~= '' then
 			client:send("CHAT"..game:getLocalPlayer().name.." "..self.textbox.text)
+			self.sent[#self.sent + 1] = self.textbox.text
 		end
 		
 		if self.textbox.text:sub(1,1) == '/' then
@@ -63,7 +66,14 @@ function chatbox:keypressed(key, isrepeat)
 		self.textbox.text = ''
 		self.textbox.drawText = ''
 		self.textbox.firstInput = true
+		self.index = 0
 		game.input:load()
+	elseif key == "up" then
+		self.textbox.text = self.sent[#self.sent - self.index]
+		self.index = math.min( self.index + 1, #self.sent - 1 )
+	elseif key == "down" then
+		self.textbox.text = self.sent[#self.sent - self.index]
+		self.index = math.max( self.index - 1, 0 )
 	end
 end
 
