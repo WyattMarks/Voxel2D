@@ -1,6 +1,7 @@
 local game = {}
 game.players = {}
 game.toLoad = {}
+game.name = "player"
 
 function game:load()
 	self.input = require("src/input/gameInput")
@@ -18,7 +19,7 @@ function game:load()
 	
 	world = bump.newWorld(64)
 	
-	self:addPlayer('player'..tostring(math.random(0,10)), true)
+	self:addPlayer(self.name, true)
 	
 	camera:follow(self:getLocalPlayer())
 	
@@ -45,7 +46,7 @@ function game:addPlayer(name, isLocal)
 	player.localPlayer = isLocal
 	player.inventory = inventory:new()
 	player.inventory.owner = player.name
-	player.inventory:load()
+	self.players[#self.players + 1] = player
 	
 	if #self.toLoad > 0 then
 		for k,v in pairs(self.toLoad) do
@@ -56,7 +57,6 @@ function game:addPlayer(name, isLocal)
 		end
 	end
 	
-	self.players[#self.players + 1] = player
 	
 	player:load()
 end

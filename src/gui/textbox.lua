@@ -70,7 +70,11 @@ end
 
 function textbox:draw()
 	love.graphics.setFont(self.font)
-	love.graphics.setColor(70,70,70,140)
+	if self.active then
+		love.graphics.setColor(50,50,50,140)
+	else
+		love.graphics.setColor(70,70,70,140)
+	end
 	love.graphics.rectangle('fill', self.x, self.y, self.width, self.font:getHeight())
 	
 	love.graphics.setColor(255,255,255)

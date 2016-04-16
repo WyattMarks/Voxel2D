@@ -13,9 +13,7 @@ function main:load()
 		
 		
 	function self.hostButton.onClick(btn)
-		game:load()
-		server:load()
-		client:load()
+		menu:setScreen('host')
 	end
 		
 	function self.joinButton.onClick(btn)

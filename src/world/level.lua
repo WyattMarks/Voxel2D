@@ -419,7 +419,7 @@ function level:loadData()
 	local file, size = love.filesystem.read(self.name.."/"..self.name..".data")
 	
 	local data = Tserial.unpack(file)
-	
+	self.levelData = data
 	self.offset = data.seed
 	
 	for k,v in pairs(game.players) do

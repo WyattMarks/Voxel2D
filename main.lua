@@ -9,7 +9,7 @@ require("src/thirdparty/Tserial")
 
 --Networking related
 require("enet")
-server = require("src/networking/server")
+server = require("src/networking/server") 
 client = require("src/networking/client")
 
 --World related

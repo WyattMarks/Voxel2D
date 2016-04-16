@@ -19,7 +19,8 @@ function client:load()
 	--self.udp:settimeout(0)
 	
 	local player = game:getLocalPlayer()
-	self:send("JOIN"..player.name.." "..player.x.." "..player.y)
+	local toSend = {player.name, player.x, player.y}
+	self:send("JOIN"..Tserial.pack(toSend, false, false))
 end
 
 function client:updatePlayerInfo(data)
@@ -29,9 +30,11 @@ function client:updatePlayerInfo(data)
 	for name, info in pairs(data) do
 		if name ~= player.name then
 			local ply = game:getPlayer(name)
-			ply.x = info[1]
-			ply.y = info[2]
-			ply.yvel = info[3]
+			if ply then
+				ply.x = info[1]
+				ply.y = info[2]
+				ply.yvel = info[3]
+			end
 		end
 	end
 end
@@ -68,8 +71,10 @@ function client:update(dt)
 			if data == "READY" then
 				self.ready = true
 			elseif data:sub(1,4) == "JOIN" then
-				data = data:sub(5)
-				local name, x, y = data:match("^(%-?[%a|%d.e]*) (%-?[%d.e]*) (%-?[%d.e]*)$") --jesus this is some crazy stuff
+				data = Tserial.unpack( data:sub(5) )
+				local name = data[1]
+				local x = data[2]
+				local y = data[3]
 					
 				local player = game:getLocalPlayer()
 				if name == player.name or server.hosting then
@@ -79,6 +84,7 @@ function client:update(dt)
 				player = game:getPlayer(name)
 				player.x = tonumber(x)
 				player.y = tonumber(y)
+				player.inventory:loadSaveFile(data[4])
 			elseif data:sub(1,4) == "CHAT" then
 				data = data:sub(5)
 				local name = data:match("^(%-?[%a|%d.e]*) ")
@@ -96,6 +102,18 @@ function client:update(dt)
 			elseif data:sub(1,6) == "UPDATE" then
 				data = data:sub(7)
 				self:updatePlayerInfo(data)
+			elseif data:sub(1,5) == "BREAK" then
+				print(data)
+				self:breakBlock(data:sub(6))
+			elseif data:sub(1,5) == "PLACE" then
+				self:placeBlock(data:sub(6))
+			elseif data:sub(1,9) == "INVENTORY" then
+				game:getLocalPlayer().inventory:loadSaveFile(data:sub(10))
+			elseif data:sub(1,4) == "MOVE" then
+				local player = game:getLocalPlayer()
+				local coords = Tserial.unpack(data:sub(5))
+				player.x = coords[1]
+				player.y = coords[2]
 			end
 		elseif event and event.type == 'disconnect' then 
 			error("Network error: "..tostring(event.data))
@@ -104,11 +122,43 @@ function client:update(dt)
 	until not event
 end
 
+function client:breakBlock(breakInfo)
+	breakInfo = Tserial.unpack(breakInfo)
+	local player = game:getPlayer(breakInfo[1])
+	breakInfo = Tserial.unpack(breakInfo[2])
+	
+	local toAdd = blockManager:getByID(breakInfo[1])
+	local x = breakInfo[2]
+	local y = breakInfo[3]
+	local chunk = breakInfo[4]
+	local bg = breakInfo[5]
+	
+	if player.inventory:add(toAdd, 1) then
+		level:deleteBlock(x, y, chunk, bg)
+	end
+end
 
-
-
-
-
+function client:placeBlock(placeInfo)
+	placeInfo = Tserial.unpack(placeInfo)
+	local player = game:getPlayer(placeInfo[1])
+	placeInfo = Tserial.unpack(placeInfo[2])
+	
+	--{item.name, x, y, chunk, bg, self.activeSlot}
+	local block = blockManager.blocks[placeInfo[1]]:new()
+	block.bg = placeInfo[5]
+	block:updateQuad()
+	
+	level:placeBlock(block, placeInfo[2], placeInfo[3], placeInfo[4], block.bg)
+	
+	if not player.localPlayer then
+		local item = player.inventory.inventory[placeInfo[6]][player.inventory.height]
+		if item.quantity <= 1 then
+			player.inventory.inventory[placeInfo[6]][player.inventory.height] = {}
+		else
+			player.inventory.inventory[placeInfo[6]][player.inventory.height].quantity = item.quantity - 1
+		end
+	end
+end
 
 
 

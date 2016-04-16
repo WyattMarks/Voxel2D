@@ -85,7 +85,17 @@ function player:checkPlace(dt)
 			local x, y, chunk = level:screenToWorld(x, y, true)
 			
 			if (lastPlace[1] ~= x or lastPlace[2] ~= y) and self:canPlace(x, y, chunk, down) then
-				local block = blockManager.blocks[item.name]:new()
+				local bg = down == 2
+				
+				local placeInfo = {item.name, x, y, chunk, bg, self.activeSlot}
+				client:send("PLACE"..Tserial.pack(placeInfo, false, false))
+				
+				if item.quantity <= 1 then
+					self.inventory.inventory[self.activeSlot][self.inventory.height] = {}
+				else
+					self.inventory.inventory[self.activeSlot][self.inventory.height].quantity = item.quantity - 1
+				end
+				--[[local block = blockManager.blocks[item.name]:new()
 				block.bg = down == 2
 				block:updateQuad()
 				
@@ -95,7 +105,7 @@ function player:checkPlace(dt)
 					self.inventory.inventory[self.activeSlot][self.inventory.height] = {}
 				else
 					self.inventory.inventory[self.activeSlot][self.inventory.height].quantity = item.quantity - 1
-				end
+				end]]
 			end
 		end
 	end
@@ -110,6 +120,7 @@ function player:canMine()
 	
 	local distance = math.floor(math.sqrt( (mouseX - playerX)^2 + (mouseY - playerY)^2 ) / blockManager.size)
 	if distance >= settings.playerReach and not self.instaBreak then
+		self.mining = false
 		return false
 	end
 	
@@ -150,14 +161,16 @@ function player:checkMine(dt)
 				delay = 0
 			end
 			
-			if self.sameActive > delay then
+			if self.sameActive > delay and not self.breaking.broke then
 				local x, y, chunk = level:screenToWorld(x, y, true)
-				local toAdd = blockManager:getByID(self.breaking.dropID):new()
 				
-				if self.inventory:add(toAdd, 1) then
-					level:deleteBlock(x, y, chunk, self.breaking.bg)
-					self.mining = false
-				end
+				self.breaking.broke = true
+				
+				local breakInfo = {self.breaking.dropID, x, y, chunk, self.breaking.bg}
+				
+				client:send("BREAK"..Tserial.pack(breakInfo, false, false))
+				self.mining = false
+				self.sameActive = 0
 			end
 		end
 	else
@@ -167,6 +180,14 @@ end
 
 function player:load()
 	world:add(self, self.x - .5, self.y, self.width - 1, self.height)
+	self.inventory:load()
+	
+	if level.levelData and level.levelData[self.name] then
+		self.x = level.levelData[self.name].x
+		self.y = level.levelData[self.name].y
+		
+		server:send(self, "MOVE"..Tserial.pack{self.x,self.y})
+	end
 end
 
 function player:mousepressed(x, y, button)
@@ -185,9 +206,11 @@ end
 
 function player:update(dt)
 	local x,y,chunk = self:getWorldCoords()
-	debug:add("Chunk", chunk)
-	debug:add("Coords", "("..tostring(x)..","..tostring(y)..")")
-	debug:add("Mode", self.mode)
+	if self.localPlayer then
+		debug:add("Chunk", chunk)
+		debug:add("Coords", "("..tostring(x)..","..tostring(y)..")")
+		debug:add("Mode", self.mode)
+	end
 	local distance = math.floor( self.speed * dt )
 	
 	local xMove = self.x

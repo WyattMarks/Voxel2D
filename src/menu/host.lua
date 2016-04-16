@@ -1,13 +1,14 @@
-local join = {}
+local host = {}
 
-function join:load()
+function host:load()
 	self.bgImage = love.graphics.newImage('assets/background.png')
-	self.addressBox = textbox:new()
-	self.addressBox.width = 250
-	self.addressBox.font = font.medium
-	self.addressBox.x = screenWidth / 2 - self.addressBox.width / 2
-	self.addressBox.y = screenHeight / 3 + self.addressBox.font:getHeight() / 2 * 6
-	self.addressBox.text = "localhost"
+	self.portBox = textbox:new()
+	self.portBox.width = 100
+	self.portBox.font = font.medium
+	self.portBox.x = screenWidth / 2 - self.portBox.width / 2
+	self.portBox.y = screenHeight / 3 + self.portBox.font:getHeight() / 2 * 6
+	self.portBox.y = screenHeight / 3 + self.portBox.font:getHeight() / 2 * 6
+	self.portBox.text = '1337'
 	
 	self.nameBox = textbox:new()
 	self.nameBox.width = 250
@@ -15,6 +16,7 @@ function join:load()
 	self.nameBox.x = screenWidth / 2 - self.nameBox.width / 2
 	self.nameBox.y = screenHeight / 3 + self.nameBox.font:getHeight() / 2 * 9
 	self.nameBox.text = "Player"..math.random(1,10)
+	
 	
 	self.nameBox.textinput = function(nameBox, t)
 		if nameBox.active then
@@ -27,7 +29,7 @@ function join:load()
 		end
 	end
 	
-	self.addressBox.textinput = self.nameBox.textinput
+	self.portBox.textinput = self.nameBox.textinput
 	
 	self.nameBox.keypressed = function(nameBox, key, isrepeat)
 		if key == "backspace" and nameBox.active then
@@ -44,30 +46,29 @@ function join:load()
 		end
 	end
 	
-	self.addressBox.keypressed = self.nameBox.keypressed
+	self.portBox.keypressed = self.nameBox.keypressed
+
 	
 	self.backButton = button:new({text = "Back", font = font.large, width = 220, height = 50, x = screenWidth / 2 - 220 - 220/4, y = screenHeight / 2 + 30})
 	self.backButton.highlightColor = {r = 90, g = 90, b = 90}
 	self.backButton.clickColor = {r = 50, g = 50, b = 50}
 	
-	self.joinButton = button:new({text = "Join Game", font = font.large, width = 220, height = 50, x = screenWidth / 2 + 220/4, y = screenHeight / 2 + 30})
-	self.joinButton.highlightColor = {r = 90, g = 90, b = 90}
-	self.joinButton.clickColor = {r = 50, g = 50, b = 50}
+	self.hostButton = button:new({text = "Host Game", font = font.large, width = 220, height = 50, x = screenWidth / 2 + 220/4, y = screenHeight / 2 + 30})
+	self.hostButton.highlightColor = {r = 90, g = 90, b = 90}
+	self.hostButton.clickColor = {r = 50, g = 50, b = 50}
 	
-	function self.joinButton.onClick(btn)
+	function self.hostButton.onClick(btn)
 		game.name = self.nameBox.text
-		menu:setScreen('main')
-		game:load()
-		local ip = self.addressBox.text
 		local port = 1337
 		
-		if ip:find(":") then
-			local index = ip:find(":")
-			ip = ip:sub(1, index - 1)
-			port = tonumber(ip:sub(index + 1))
-		end
-		client.address = ip
+		port = tonumber(self.portBox.text)
+
+	
 		client.port = port
+		server.port = port
+		menu:setScreen('main')
+		server:load()
+		game:load()
 		client:load()
 	end
 		
@@ -77,43 +78,43 @@ function join:load()
 end
 
 
-function join:draw()
+function host:draw()
 	love.graphics.setColor(200,200,200)
 	love.graphics.draw(self.bgImage, 0,0)
 	love.graphics.setColor(255,255,255)
 	
 	
 	love.graphics.setFont(font.large)
-	love.graphics.print("Join Game", screenWidth / 2 - font.large:getWidth("Join Game") / 2, screenHeight / 3)
+	love.graphics.print("Host Game", screenWidth / 2 - font.large:getWidth("Host Game") / 2, screenHeight / 3)
 	
 	love.graphics.setFont(font.medium)
-	love.graphics.print("Host:", self.addressBox.x - font.medium:getWidth("Host:"), self.addressBox.y)
+	love.graphics.print("Port:", self.portBox.x - font.medium:getWidth("Port:"), self.portBox.y)
 	
 	love.graphics.print("Name:", self.nameBox.x - font.medium:getWidth("Name:"), self.nameBox.y)
 	
-	self.addressBox:draw()
+	self.portBox:draw()
 	self.nameBox:draw()
 	self.backButton:draw()
-	self.joinButton:draw()
+	self.hostButton:draw()
 end
 
-function join:update(dt)
-	self.addressBox:update(dt)
-	self.joinButton:update(dt)
+function host:update(dt)
+	self.portBox:update(dt)
+	self.hostButton:update(dt)
 	self.backButton:update(dt)
 	self.nameBox:update(dt)
 end
 
-function join:keypressed(key,isrepeat)
-	self.addressBox:keypressed(key, isrepeat)
+function host:keypressed(key,isrepeat)
+	self.portBox:keypressed(key, isrepeat)
 	self.nameBox:keypressed(key, isrepeat)
 end
 
-function join:textinput(text)
-	self.addressBox:textinput(text)
+function host:textinput(text)
+	self.portBox:textinput(text)
 	self.nameBox:textinput(text)
 end
 
 
 
-return join
+return host

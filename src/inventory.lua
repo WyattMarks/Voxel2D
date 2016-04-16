@@ -23,14 +23,7 @@ function inventory:load()
 	self.font = font.small
 end
 
-
-function inventory:save()
-	if not love.filesystem.isDirectory(level.name) then
-		love.filesystem.createDirectory(level.name)
-	end
-	
-	local playerName = self.owner
-	
+function inventory:createSaveFile()
 	local toSave = {}
 	for w,col in pairs(self.inventory) do
 		if not toSave[w] then
@@ -42,25 +35,24 @@ function inventory:save()
 		end
 	end
 	
-	local final = Tserial.pack(toSave, false, true)
+	return Tserial.pack(toSave, false, false)
+end
+
+function inventory:save()
+	if not love.filesystem.isDirectory(level.name) then
+		love.filesystem.createDirectory(level.name)
+	end
+	
+	local playerName = self.owner
+	
+	local final = self:createSaveFile()
 	
 	love.filesystem.write(level.name.."/"..playerName..".inventory", final)
 	
 	debug:print("Saved "..playerName.."'s inventory")
 end
 
-function inventory:loadSave()
-	if not love.filesystem.isDirectory(level.name) then
-		return false
-	end
-	
-	local playerName = self.owner
-	
-	if not love.filesystem.isFile(level.name.."/"..playerName..".inventory") then
-		return false
-	end
-	
-	local file, size = love.filesystem.read(level.name.."/"..playerName..".inventory")
+function inventory:loadSaveFile(file)
 	local saved = Tserial.unpack(file)
 	
 	for w, col in pairs(saved) do
@@ -78,11 +70,35 @@ function inventory:loadSave()
 		end
 	end
 	
+	if self.owner ~= game:getLocalPlayer().name and server.hosting then
+		server:send(game:getPlayer(self.owner), "INVENTORY"..file)
+	end
+end
+
+function inventory:loadSave()
+	if not server.hosting then
+		return false
+	end
+	if not love.filesystem.isDirectory(level.name) then
+		return false
+	end
+	
+	
+	local playerName = self.owner
+	
+	if not love.filesystem.isFile(level.name.."/"..playerName..".inventory") then
+		return false
+	end
+	
+	local file, size = love.filesystem.read(level.name.."/"..playerName..".inventory")
+	self:loadSaveFile(file)
+	
 	debug:print("Loaded "..playerName.."'s inventory")
 	return true
 end
 
 function inventory:add(block, quantity)
+	print(self.owner, block.name, quantity)
 	for h=1, self.height do
 		for w=1, self.width do
 			if (self.inventory[w][h].id or 0) == block.id and (self.inventory[w][h].quantity or 0) < 64 then
@@ -295,11 +311,20 @@ function inventory:update(dt)
 end
 
 function inventory:new()
-	local new = {}
-	for k,v in pairs(self) do
-		new[k] = v
+	local function copy(tbl)
+		local new = {}
+		for k,v in pairs(tbl) do
+			if type(v) == "table" then
+				new[k] = copy(v)
+			else
+				new[k] = v
+			end
+		end
+		
+		return new
 	end
-	return new
+
+	return copy(self)
 end
 
 

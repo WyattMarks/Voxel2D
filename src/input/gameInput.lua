@@ -69,7 +69,7 @@ function input:load()
 
 	bind:addBind("debug", "g", function(down)
 		if down then
-			game.chatbox:addMessage("proCr4t3r", "i fooked your mum and ill steal your diamonds too")
+			game:getLocalPlayer().inventory:add(blockManager:getBlock('dirt'), 1)
 		end
 	end)
 

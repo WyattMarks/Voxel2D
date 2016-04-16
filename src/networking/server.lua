@@ -42,6 +42,31 @@ function server:broadcastPlayerInfo()
 	self:broadcast('UPDATE'..message)
 end
 
+function server:send(player, data)
+	player.peer:send(data)
+end
+
+function server:playerJoin(data, peer)
+	local info = Tserial.unpack( data:sub(5) )
+	local name = info[1]
+	local x = info[2]
+	local y = info[3]
+
+	
+	game:network(name, peer)
+	if name ~= game:getLocalPlayer().name then
+		game:addPlayer(name, false)
+	end
+	info[4] = game:getPlayer(name).inventory:createSaveFile()
+	self:broadcast(Tserial.pack(info, false, false))
+					
+	for k,v in pairs(game.players) do
+		if v.peer ~= peer then
+			peer:send("JOIN"..Tserial.pack( {v.name, v.x, v.y, v.inventory:createSaveFile()}, false, false ))
+		end
+	end
+end
+
 function server:update(dt)
 	self.lastUpdate = self.lastUpdate + dt
 	if self.lastUpdate >= self.updateRate then
@@ -56,26 +81,17 @@ function server:update(dt)
 			if event.type == "receive" then
 				local data = event.data
 				if data:sub(1,4) == "JOIN" then
-					data = data:sub(5)
-					local name, x, y = data:match("^(%-?[%a|%d.e]*) (%-?[%d.e]*) (%-?[%d.e]*)$") --jesus this is some crazy stuff
-					
-					if name ~= game:getLocalPlayer().name then
-						game:addPlayer(name, false)
-					end
-					game:network(name, event.peer)
-					self:broadcast("JOIN"..name.." "..x.." "..y)
-					
-					for k,v in pairs(game.players) do
-						if v.peer ~= event.peer then
-							event.peer:send("JOIN"..v.name.." "..v.x.." "..v.y)
-						end
-					end
+					self:playerJoin(data, event.peer)
 				elseif data:sub(1,4) == "CHAT" then	
 					self:broadcast(data)
 				elseif data:sub(1,4) == "LOAD" then
 					self:sendChunk(tonumber(data:sub(5)), event.peer)
 				elseif data:sub(1,6) == "UPDATE" then
 					self:processPlayerInfo(data:sub(7), self:getPlayer(event.peer))
+				elseif data:sub(1,5) == "BREAK" then
+					self:breakBlock(data:sub(6), self:getPlayer(event.peer))
+				elseif data:sub(1,5) == "PLACE" then
+					self:placeBlock(data:sub(6), self:getPlayer(event.peer))
 				end
 			elseif event.type == "connect" then
 				event.peer:send("READY")
@@ -85,6 +101,14 @@ function server:update(dt)
 		end
 		event = self.host:service()
 	until not event
+end
+
+function server:breakBlock(breakInfo, player)
+	self:broadcast("BREAK"..Tserial.pack({player.name, breakInfo}))
+end
+
+function server:placeBlock(placeInfo, player)
+	self:broadcast("PLACE"..Tserial.pack({player.name, placeInfo}))
 end
 
 function server:sendChunk(chunkNum, peer)
