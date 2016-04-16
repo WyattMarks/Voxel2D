@@ -18,9 +18,9 @@ function hud:drawHotBar(player, index)
 		
 		if player.inventory.inventory[w][player.inventory.height].id then
 			love.graphics.setColor(255,255,255)
-			local item = player.inventory.inventory[w][player.inventory.height]
+			local item = blockManager:getByID( player.inventory.inventory[w][player.inventory.height].id )
 			love.graphics.draw(blockManager.texture, item.quad, x + 1, y + 2, 0, 1.875, 1.875)
-
+			item = player.inventory.inventory[w][player.inventory.height]
 				
 			if item.quantity > 1 then
 				love.graphics.setColor(255,255,255)

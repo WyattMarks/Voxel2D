@@ -80,32 +80,21 @@ function player:checkPlace(dt)
 	
 	local lastPlace = self.lastPlace
 	if down ~= 0 then
-		local item = self.inventory.inventory[self.activeSlot][self.inventory.height]
-		if item.delay then
+		local item = blockManager:getByID( self.inventory.inventory[self.activeSlot][self.inventory.height].id )
+		if item and item.delay then
 			local x, y, chunk = level:screenToWorld(x, y, true)
 			
 			if (lastPlace[1] ~= x or lastPlace[2] ~= y) and self:canPlace(x, y, chunk, down) then
 				local bg = down == 2
 				
-				local placeInfo = {item.name, x, y, chunk, bg, self.activeSlot}
+				local placeInfo = {item.id, x, y, chunk, bg, self.activeSlot}
 				client:send("PLACE"..Tserial.pack(placeInfo, false, false))
 				
-				if item.quantity <= 1 then
+				if self.inventory.inventory[self.activeSlot][self.inventory.height].quantity <= 1 then
 					self.inventory.inventory[self.activeSlot][self.inventory.height] = {}
 				else
-					self.inventory.inventory[self.activeSlot][self.inventory.height].quantity = item.quantity - 1
+					self.inventory.inventory[self.activeSlot][self.inventory.height].quantity = self.inventory.inventory[self.activeSlot][self.inventory.height].quantity - 1
 				end
-				--[[local block = blockManager.blocks[item.name]:new()
-				block.bg = down == 2
-				block:updateQuad()
-				
-				level:placeBlock(block, x, y, chunk, block.bg)
-				
-				if item.quantity <= 1 then
-					self.inventory.inventory[self.activeSlot][self.inventory.height] = {}
-				else
-					self.inventory.inventory[self.activeSlot][self.inventory.height].quantity = item.quantity - 1
-				end]]
 			end
 		end
 	end

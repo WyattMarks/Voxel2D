@@ -103,7 +103,6 @@ function client:update(dt)
 				data = data:sub(7)
 				self:updatePlayerInfo(data)
 			elseif data:sub(1,5) == "BREAK" then
-				print(data)
 				self:breakBlock(data:sub(6))
 			elseif data:sub(1,5) == "PLACE" then
 				self:placeBlock(data:sub(6))
@@ -144,7 +143,7 @@ function client:placeBlock(placeInfo)
 	placeInfo = Tserial.unpack(placeInfo[2])
 	
 	--{item.name, x, y, chunk, bg, self.activeSlot}
-	local block = blockManager.blocks[placeInfo[1]]:new()
+	local block = blockManager:getByID(placeInfo[1]):new()
 	block.bg = placeInfo[5]
 	block:updateQuad()
 	

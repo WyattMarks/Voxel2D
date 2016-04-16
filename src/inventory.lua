@@ -98,12 +98,11 @@ function inventory:loadSave()
 end
 
 function inventory:add(block, quantity)
-	print(self.owner, block.name, quantity)
 	for h=1, self.height do
 		for w=1, self.width do
 			if (self.inventory[w][h].id or 0) == block.id and (self.inventory[w][h].quantity or 0) < 64 then
 				local oldAmount = (self.inventory[w][h].quantity or 0)
-				self.inventory[w][h] = block
+				self.inventory[w][h] = {id = block.id}
 				self.inventory[w][h].quantity = oldAmount + quantity
 
 				return true
@@ -114,7 +113,7 @@ function inventory:add(block, quantity)
 	for w=1, self.width do
 		if (self.inventory[w][self.height].id or block.id) == block.id and (self.inventory[w][self.height].quantity or 0) < 64 then
 			local oldAmount = (self.inventory[w][self.height].quantity or 0)
-			self.inventory[w][self.height] = block
+			self.inventory[w][self.height] = {id = block.id}
 			self.inventory[w][self.height].quantity = oldAmount + quantity
 
 			return true
@@ -125,7 +124,7 @@ function inventory:add(block, quantity)
 		for w=1, self.width do
 			if (self.inventory[w][h].id or block.id) == block.id and (self.inventory[w][h].quantity or 0) < 64 then
 				local oldAmount = (self.inventory[w][h].quantity or 0)
-				self.inventory[w][h] = block
+				self.inventory[w][h] = {id = block.id}
 				self.inventory[w][h].quantity = oldAmount + quantity
 
 				return true
@@ -173,9 +172,10 @@ function inventory:draw()
 			local y = y + h * 34 + 360 + offset
 			
 			if self.inventory[w][h].id then
+				local block = blockManager:getByID(self.inventory[w][h].id)
 				love.graphics.setColor(255,255,255)
 				if self.activeItem ~= self.inventory[w][h] then
-					love.graphics.draw(blockManager.texture, self.inventory[w][h].quad, x + 1, y + 1, 0, 1.875, 1.875)
+					love.graphics.draw(blockManager.texture, block.quad, x + 1, y + 1, 0, 1.875, 1.875)
 				end
 				
 				if self.inventory[w][h].quantity > 1 then
