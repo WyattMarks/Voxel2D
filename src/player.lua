@@ -168,7 +168,6 @@ function player:checkMine(dt)
 end
 
 function player:load()
-	world:add(self, self.x - .5, self.y, self.width - 1, self.height)
 	self.inventory:load()
 	
 	if level.levelData and level.levelData[self.name] then
@@ -177,6 +176,8 @@ function player:load()
 		
 		server:send(self, "MOVE"..Tserial.pack{self.x,self.y})
 	end
+	
+	world:add(self, self.x - .5, self.y, self.width - 1, self.height)
 end
 
 function player:mousepressed(x, y, button)

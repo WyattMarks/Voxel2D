@@ -66,13 +66,6 @@ function hud:draw()
 	
 	
 	self:drawHotBar(player)
-	local i=1
-	for k,v in pairs(game.players) do
-		if not v.localPlayer then
-			self:drawHotBar(v, i)
-			i=i+1
-		end
-	end
 end
 
 

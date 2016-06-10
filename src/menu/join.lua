@@ -35,7 +35,7 @@ function join:load()
 				nameBox.text = ''
 				nameBox.firstInput = false
 			else
-				local byteoffset = utf8.offset(self.text, -1)
+				local byteoffset = utf8.offset(nameBox.text, -1)
 			 
 				if byteoffset then
 					nameBox.text = string.sub(nameBox.text, 1, byteoffset - 1)
