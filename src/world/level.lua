@@ -12,6 +12,7 @@ end
 function level:load()
 	self.offset = math.random(-10000,100000)
 	self:loadData()
+	self:generateWorld(3)
 end
 
 function level:screenToWorld(x, y, actuallyScreen)
@@ -89,24 +90,35 @@ end
 
 
 function level:unloadWorld(num)
-	local curChunk = self:getChunk(game:getLocalPlayer().x)
+	local toKeep = {}
+	
+	for index, player in pairs(game.players) do
+		local curChunk = self:getChunk(player.x)
+		
+		for k,v in pairs(self.chunks) do
+			if math.abs(curChunk - k) <= 10 then
+				toKeep[k] = v
+			end
+		end
+	end
+
 	
 	for k,v in pairs(self.chunks) do
-		if math.abs(curChunk - k) > 10 then
-			if server.hosting then
-				self:save(self.chunks[k], k )
-			end
-			
-			for x, col in pairs(self.chunks[k][1]) do
-				for y, block in pairs(col) do
-					if not block.transparent and block.id >= 0 then
-						world:remove(block)
-					end
-				end
-			end 
-			self.chunks[k] = nil
-			debug:print("Unloaded chunk <"..tostring(k)..">")
+		if toKeep[k] then return end
+		
+		if server.hosting then
+			self:save(self.chunks[k], k )
 		end
+				
+		for x, col in pairs(self.chunks[k][1]) do
+			for y, block in pairs(col) do
+				if not block.transparent and block.id >= 0 then
+					world:remove(block)
+				end
+			end
+		end 
+		self.chunks[k] = nil
+		debug:print("Unloaded chunk <"..tostring(k)..">")
 	end
 end
 

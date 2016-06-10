@@ -201,7 +201,8 @@ function inventory:draw()
 			y = y + 8
 		end
 		love.graphics.setColor(255,255,255)
-		love.graphics.draw(blockManager.texture, self.inventory[w][h].quad, x, y, 0, 1.875, 1.875)
+		local block = blockManager:getByID(self.inventory[w][h].id)
+		love.graphics.draw(blockManager.texture, block.quad, x, y, 0, 1.875, 1.875)
 		if self.inventory[w][h].quantity > 1 then
 			love.graphics.setFont( self.font )
 			local y = y + 32 - self.font:getHeight()

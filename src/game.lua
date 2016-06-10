@@ -21,9 +21,10 @@ function game:load()
 	
 	self:addPlayer(self.name, true)
 	
+	level:load()
 	camera:follow(self:getLocalPlayer())
 	
-	level:load()
+	
 	self.chatbox = chatbox:new()
 	self.chatbox.font = font.small
 	self.chatbox.textbox.font = self.chatbox.font
